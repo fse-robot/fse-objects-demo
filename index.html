@@ -65,6 +65,14 @@ h1{font-size:28px;line-height:1.15;font-weight:800;letter-spacing:-.02em}
 .rows{display:flex;flex-direction:column;gap:8px}
 .row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-areas:"nm nm nm nm" "id rs re ok";align-items:center;gap:4px 8px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:12px 14px;text-align:left;width:100%}
 .row:hover{border-color:var(--field)}
+.row{position:relative}.row.ed:hover{border-color:var(--line)}
+.ce{cursor:pointer;border-radius:8px;background:var(--soft);padding:2px 6px;margin:-2px -6px}
+.ce:hover{box-shadow:inset 0 0 0 1px var(--field)}
+.sd.ce{width:16px;height:16px;padding:0;margin:0;box-shadow:0 0 0 3px var(--soft)}
+.pen{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--soft);color:var(--ink);flex:none}
+.pen[aria-pressed=true]{background:var(--redbg);color:#fff}
+.pop{position:absolute;top:calc(100% + 4px);left:0;z-index:20;width:min(320px,100%);background:var(--card);border:1px solid var(--field);border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.22);padding:12px;display:grid;gap:6px;cursor:default;font-size:16px;font-weight:400;color:var(--ink)}
+.pop label{font-size:14px;color:var(--mut)}
 .c-nm{grid-area:nm;display:flex;align-items:center;gap:8px;min-width:0}
 .c-id{grid-area:id}.c-rs{grid-area:rs;color:var(--mut);font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .c-re{grid-area:re;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
@@ -239,6 +247,7 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.4}
 <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
 <symbol id="send" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
 <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/></symbol>
 <symbol id="pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
 <symbol id="check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
 <symbol id="bld" viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 012-2h6a2 2 0 012 2v16M14 9h4a2 2 0 012 2v10M8 7h2M8 11h2M8 15h2M3 21h18"/></symbol>
@@ -310,22 +319,39 @@ function head(){
    <div class="seg" role="group" aria-label="Вид">
     <button aria-pressed="${S.s==='list'}" data-a="v-list" title="Списком">${ic("list","Списком")}</button>
     <button aria-pressed="${S.s==='stages'}" data-a="v-stages" title="По этапам">${ic("cols","По этапам")}</button></div>
+   ${S.s==='list'?`<button class="pen" data-a="edit" aria-pressed="${!!S.ed}" title="Править">${ic('pen','Править')}</button>`:''}
    <button class="add" data-a="new">${ic('add')}Объект</button></div>`;
 }
 const filt=()=>{const q=S.q.trim().toLowerCase();return q?OBJ.filter(o=>(o.name+o.id+o.addr+o.resp).toLowerCase().includes(q)):OBJ};
+const LB={name:'Название',st:'Этап',resp:'Ответственный',block:'Что мешает',due:'Оплатить до',eq:'Оборудование',mo:'Монтаж',paid:'Получено'};
+function pf(o,k){
+  const l=`<label for="p-${k}">${LB[k]}</label>`,m=v=>(+v||0).toLocaleString('ru-RU',{maximumFractionDigits:0});
+  if(k==='st')return l+`<select class="in" id="p-st" data-pk="st">${ST.map((s,i)=>`<option value="${i}"${i===o.st?' selected':''}>${s}</option>`).join('')}</select>`;
+  if(k==='resp')return l+`<select class="in" id="p-resp" data-pk="resp">${PEOPLE.map(p=>`<option${p===o.resp?' selected':''}>${p}</option>`).join('')}</select>`;
+  if(k==='due')return l+`<input class="in" id="p-due" data-pk="due" type="date" value="${o.due}">`;
+  if(['eq','mo','paid'].includes(k))return l+`<input class="in n" id="p-${k}" data-pk="${k}" inputmode="decimal" value="${m(o[k])}">`;
+  return l+`<input class="in" id="p-${k}" data-pk="${k}" value="${esc(o[k])}">`;
+}
+const pop=(o,k)=>`<div class="pop" role="dialog" aria-label="${k==='to'?'По договору':LB[k]}">${k==='to'?pf(o,'eq')+pf(o,'mo'):pf(o,k)}</div>`;
+function placePop(){
+  const P=document.querySelector('.pop');if(!P)return;const R=P.parentElement,C=[...R.querySelectorAll(`[data-e="${S.pe.k}"]`)].find(x=>x.offsetParent);
+  if(C){const x=C.getBoundingClientRect().left-R.getBoundingClientRect().left;P.style.left=Math.max(0,Math.min(x-8,R.clientWidth-P.offsetWidth))+'px'}
+  P.scrollIntoView({block:'nearest'});P.querySelector('.in')?.focus();
+}
 function list(){
   const L=filt();
   return head()+totals(L)+`<div class="rhead"><span class="c-id">ID</span><span class="c-nm">Объект</span><span class="c-st">Этап</span><span class="c-rs">Ответственный</span><span class="c-bl">Что мешает</span><span class="c-du">Оплатить до</span><span class="c-to">По договору</span><span class="c-re">Остаток</span><span></span></div><div class="rows">`+
-  (L.length?L.map(o=>{const r=rest(o),l=late(o);return `<button class="row" data-open="${o.id}">
+  (L.length?L.map(o=>{const r=rest(o),l=late(o),E=S.ed,e=k=>E?` data-e="${k}" tabindex="0" role="button"`:'',c=E?'ce':'';return `<${E?'div':'button'} class="row ${E?'ed':''}" ${E?`data-id="${o.id}"`:`data-open="${o.id}"`}>
     <span class="c-id id">${o.id}</span>
-    <span class="c-nm"><i class="sd" style="background:var(--s${o.st})" title="${ST[o.st]}"></i><span class="nm" title="${esc(o.name)}">${esc(o.name)}</span></span>
-    <span class="c-st">${chip(o.st)}</span><span class="c-rs">${esc(o.resp)}</span>
-    <span class="c-bl" title="${esc(o.block)}">${esc(o.block)||'—'}</span>
-    <span class="c-du ${l?'od':''}">${fd(o.due)||'—'}</span>
-    <span class="c-to">${rub(total(o))}</span>
-    <span class="c-re">${r?rub(r):'Оплачено'}</span>
+    <span class="c-nm"><i class="sd ${c}" style="background:var(--s${o.st})" title="${ST[o.st]}"${e('st')}></i><span class="nm"><span class="${c}" title="${esc(o.name)}"${e('name')}>${esc(o.name)}</span></span></span>
+    <span class="c-st"><span class="${c}"${e('st')}>${chip(o.st)}</span></span><span class="c-rs"><span class="${c}"${e('resp')}>${esc(o.resp)}</span></span>
+    <span class="c-bl" title="${esc(o.block)}"><span class="${c}"${e('block')}>${esc(o.block)||'—'}</span></span>
+    <span class="c-du ${l?'od':''}"><span class="${c}"${e('due')}>${fd(o.due)||'—'}</span></span>
+    <span class="c-to"><span class="${c}"${e('to')}>${rub(total(o))}</span></span>
+    <span class="c-re"><span class="${c}"${e('paid')}>${r?rub(r):'Оплачено'}</span></span>
     <span class="c-ok">${o.block?`<span class="bw" title="${esc(o.block)}">${ic('warn','Что мешает')}</span>`:''}<i class="dot ${l?'late':''}" title="${l?`Просрочка ${l} дн.`:'В графике'}"></i></span>
-  </button>`}).join(''):`<div class="none">Ничего не найдено</div>`)+`</div>`;
+    ${S.pe&&S.pe.id===o.id?pop(o,S.pe.k):''}
+  </${E?'div':'button'}>`}).join(''):`<div class="none">Ничего не найдено</div>`)+`</div>`;
 }
 function stages(){
   const L=filt();
@@ -384,17 +410,22 @@ function paintToast(){document.querySelector('.toast')?.remove();app.insertAdjac
 function scrollFeed(){const F=document.getElementById('fl');if(F)F.scrollTop=F.scrollHeight}
 function render(){
   const v={list,stages,card,empty,load}[S.s]||list;
-  app.innerHTML=bar()+`<main>${v()}</main>`+(['list','stages','empty'].includes(S.s)?`<button class="fab" data-a="new" title="Добавить объект">${ic('add','Добавить объект')}</button>`:'')+toast();scrollFeed();
+  app.innerHTML=bar()+`<main>${v()}</main>`+(['list','stages','empty'].includes(S.s)?`<button class="fab" data-a="new" title="Добавить объект">${ic('add','Добавить объект')}</button>`:'')+toast();scrollFeed();if(S.pe)placePop();
 }
 app.addEventListener('click',e=>{
+  if(e.target.closest('.pop'))return;
+  const ce=e.target.closest('[data-e]');
+  if(ce){S.pe={id:ce.closest('.row').dataset.id,k:ce.dataset.e};return render()}
+  if(S.pe){S.pe=null;render();if(!e.target.isConnected)return}
   const b=e.target.closest('[data-a],[data-open],[data-tab],[data-st]');if(!b)return;
   if(b.dataset.open)return go({s:'card',id:b.dataset.open,tab:'obj',addCli:false});
   if(b.dataset.tab)return go({tab:b.dataset.tab});
   if(b.dataset.st){const o=cur(),n=+b.dataset.st;if(n===o.st)return;log(o,'Этап: '+ST[n]);o.st=n;render();scrollFeed();return say('Сохранено')}
   const a=b.dataset.a;
+  if(a==='edit'){S.ed=!S.ed;S.pe=null;return render()}
   if(a==='theme'){const d=document.documentElement;d.dataset.theme=d.dataset.theme==='d'?'':'d';render()}
   else if(a==='search'){S.search=!S.search;render();document.getElementById('q2')?.focus()}
-  else if(a==='v-list')go({s:'list'});else if(a==='v-stages')go({s:'stages'});
+  else if(a==='v-list')go({s:'list'});else if(a==='v-stages')go({s:'stages',ed:false,pe:null});
   else if(a==='new'){const n=OBJ.length+1,id='NF-'+String(n).padStart(3,'0');OBJ.unshift({...mk(id,'Новый объект',0,PEOPLE[0],'',0,0,0,'','','',''),feed:[],cli:[]});go({s:'card',id,tab:'obj'})}
   else if(a==='cli-add')go({addCli:true});else if(a==='cli-x')go({addCli:false});
   else if(a==='retry'){S.err=false;render();say('Сохранено')}
@@ -404,6 +435,11 @@ app.addEventListener('input',e=>{
   if(e.target.id==='nt'){e.target.nextElementSibling.disabled=!e.target.value.trim();e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+2+'px'}
 });
 app.addEventListener('change',e=>{
+  const pk=e.target.dataset.pk;
+  if(pk){const o=OBJ.find(x=>x.id===S.pe.id),v=e.target.value;
+    o[pk]=pk==='st'?+v:['eq','mo','paid'].includes(pk)?num(v):v;
+    log(o,LB[pk]+': '+(pk==='st'?ST[o.st]:['eq','mo','paid'].includes(pk)?rub(o[pk]):pk==='due'?fd(v):v||'—'));
+    say('Сохранено');if(S.pe.k!=='to'){S.pe=null;render()}else e.target.value=o[pk].toLocaleString('ru-RU',{maximumFractionDigits:0});return}
   const k=e.target.dataset.k;if(!k)return;const o=cur();
   o[k]=['eq','mo','paid'].includes(k)?num(e.target.value):e.target.value;
   if(['eq','mo','paid'].includes(k))e.target.value=o[k].toLocaleString('ru-RU',{maximumFractionDigits:0});
@@ -411,6 +447,11 @@ app.addEventListener('change',e=>{
   const lb=e.target.closest('.fl')?.querySelector('label')?.textContent.replace('Не сохранено','');
   log(o,lb+': '+(e.target.value||'—'));const F=document.getElementById('fl'),x=document.createElement('div');x.innerHTML=feed(o);F.replaceWith(x.querySelector('#fl'));scrollFeed();
   if(S.err)return say('Не сохранено',1);say('Сохранено');
+});
+app.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&S.pe){S.pe=null;return render()}
+  if(e.key==='Enter'&&e.target.dataset.e){e.preventDefault();return e.target.click()}
+  if(e.key==='Enter'&&e.target.dataset.pk){e.preventDefault();e.target.blur()}
 });
 app.addEventListener('submit',e=>{
   e.preventDefault();const f=e.target,o=cur();
