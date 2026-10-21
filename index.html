@@ -11,7 +11,7 @@
      connect-src 'self': даже при удачном XSS украденную сессию некуда отправить.
      Шрифты и иконки лежат на своём сервере — внешних источников нет вовсе (И8, И9в). -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; img-src 'self' data: blob: https://cdn.etm.ru https://luis.ru; frame-ancestors 'self'; base-uri 'none'; form-action 'none'">
-<title>FSE · app.gasbase.ru</title>
+<title>NONFIRE · Объекты</title>
 <!-- И9в · шрифты со своего сервера, не с Google Fonts. Список закрытый (И9а),
      шрифты Яндекса исключены (И9б). Файл кладёт server-10-fonts.sh. -->
 <link rel="stylesheet" href="fonts/fonts.css">
@@ -100,8 +100,8 @@
   <!-- ══ БОКОВОЕ МЕНЮ. На компьютере стоит всегда, на телефоне выезжает —
           тот же элемент и тот же выключатель drawer() из кода. ══ -->
   <aside class="side drawer" id="drawer">
-    <!-- И23 · логотип из кода приложения: пять красных прямоугольников и FSE -->
-    <div class="brand" data-act="home" title="На главную"><svg viewBox="0 0 46 40"><rect x="0" y="0" width="12" height="16"/><rect x="17" y="0" width="12" height="16"/><rect x="0" y="20" width="12" height="20"/><rect x="17" y="20" width="12" height="20"/><rect x="34" y="20" width="12" height="20"/></svg>FSE</div>
+    <!-- Логотип партнёра -->
+    <div class="brand" data-act="home" title="На главную"><img class="plogo" src="nonfire-logo.png" alt="NONFIRE"></div>
 
     <!-- И24 · названия разделов совпадают с теми, что в коде.
          И25 · активны только существующие разделы. -->
@@ -149,7 +149,7 @@
     <!-- ══ ШАПКА ══ -->
     <header class="top">
       <button class="burger" data-act="menu" title="Меню" aria-label="Меню"><svg class="i"><use href="#i-menu"/></svg></button>
-      <span class="logo" data-act="home" title="На главную"><svg viewBox="0 0 46 40"><rect x="0" y="0" width="12" height="16"/><rect x="17" y="0" width="12" height="16"/><rect x="0" y="20" width="12" height="20"/><rect x="17" y="20" width="12" height="20"/><rect x="34" y="20" width="12" height="20"/></svg><b>FSE</b></span>
+      <span class="logo" data-act="home" title="На главную"><img class="plogo" src="nonfire-logo.png" alt="NONFIRE"></span>
       <!-- И0 · кнопки «Найти» рядом с полем нет: поиск работает по вводу -->
       <div class="sr" id="topSearch"><span class="m"><svg class="i"><use href="#i-srch"/></svg></span>
         <input type="text" id="globalq" placeholder="Поиск по сметам и объектам" autocomplete="off"></div>
