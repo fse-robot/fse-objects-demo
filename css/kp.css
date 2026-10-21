@@ -2421,3 +2421,7 @@ input.f{text-align:left}
 #trackView .trke{font-size:var(--f14);line-height:1.45;white-space:pre-wrap}
 #trackView .trke .s{font-size:var(--f12);color:var(--mut);margin-bottom:4px;white-space:normal}
 #trackView .trkcl .bar{gap:6px;flex-wrap:wrap}
+.plogo{display:block;height:24px;width:auto;max-width:100%}
+.side .brand .plogo{background:#fff;border-radius:6px;padding:5px 8px;height:34px;box-sizing:border-box}
+.logo .plogo{height:20px}
+html[data-nav="min"] .side .brand .plogo{width:56px;height:auto;padding:4px}
