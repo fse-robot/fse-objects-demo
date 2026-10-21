@@ -1,1 +1,521 @@
-{"schema": {"blocks": ["Управление", "Договор и расчёты", "Подготовка и поставка", "Монтаж", "ПНР и ИД", "Сдача и закрытие"], "fields": [{"key": "code", "label": "ID объекта", "block": 0, "kind": "text", "options": null}, {"key": "title", "label": "Объект", "block": 0, "kind": "text", "options": null}, {"key": "address", "label": "Адрес", "block": 0, "kind": "text", "options": null}, {"key": "manager", "label": "Ответственный", "block": 0, "kind": "text", "options": null}, {"key": "stage", "label": "Этап", "block": 0, "kind": "choice", "options": ["Договор", "Подготовка", "Закупка", "Поставка", "Монтаж", "Испытания и ПНР", "Подготовка ИД", "Согласование ИД", "Сдача", "Закрытие расчётов", "Завершён", "Приостановлен"]}, {"key": "blocker", "label": "Что мешает", "block": 0, "kind": "long", "options": null}, {"key": "contract", "label": "Договор", "block": 1, "kind": "text", "options": null}, {"key": "contract_date", "label": "Дата договора", "block": 1, "kind": "date", "options": null}, {"key": "equipment", "label": "Оборудование", "block": 1, "kind": "money", "options": null}, {"key": "install", "label": "Монтаж", "block": 1, "kind": "money", "options": null}, {"key": "total", "label": "Всего по договору", "block": 1, "kind": "calc", "options": null}, {"key": "paid", "label": "Получено оплат", "block": 1, "kind": "money", "options": null}, {"key": "rest", "label": "Остаток к оплате", "block": 1, "kind": "calc", "options": null}, {"key": "note", "label": "Примечание", "block": 1, "kind": "long", "options": null}, {"key": "invoice1", "label": "Счёт поставщика 1", "block": 1, "kind": "text", "options": null}, {"key": "invoice2", "label": "Счёт поставщика 2", "block": 1, "kind": "text", "options": null}, {"key": "design", "label": "Проект / РД", "block": 2, "kind": "choice", "options": ["Не начато", "В работе", "Частично выполнено", "Выполнено", "Не требуется"]}, {"key": "purchase", "label": "Закупка", "block": 2, "kind": "choice", "options": ["Не начато", "В работе", "Частично выполнено", "Выполнено", "Не требуется"]}, {"key": "mount_start", "label": "Начало монтажа", "block": 3, "kind": "date", "options": null}, {"key": "mount_end", "label": "Окончание монтажа", "block": 3, "kind": "date", "options": null}, {"key": "mount_tech", "label": "Технологическая часть", "block": 3, "kind": "choice", "options": ["Не начато", "В работе", "Частично выполнено", "Выполнено", "Не требуется"]}, {"key": "mount_elec", "label": "Электротехническая часть", "block": 3, "kind": "choice", "options": ["Не начато", "В работе", "Частично выполнено", "Выполнено", "Не требуется"]}, {"key": "mounted", "label": "Что смонтировано", "block": 3, "kind": "long", "options": null}, {"key": "to_mount", "label": "Что осталось", "block": 3, "kind": "long", "options": null}, {"key": "pnr", "label": "Испытания и ПНР", "block": 4, "kind": "choice", "options": ["Не начато", "В работе", "Частично выполнено", "Выполнено", "Не требуется"]}, {"key": "id_prep", "label": "ИД — подготовка", "block": 4, "kind": "choice", "options": ["Не начата", "В работе", "Подготовлена", "Не требуется"]}, {"key": "id_sent", "label": "ИД передана", "block": 4, "kind": "date", "options": null}, {"key": "id_accepted", "label": "ИД принята", "block": 4, "kind": "date", "options": null}, {"key": "remarks", "label": "Замечания", "block": 4, "kind": "long", "options": null}, {"key": "handover_plan", "label": "Сдача — план", "block": 5, "kind": "date", "options": null}, {"key": "handover_fact", "label": "Сдача — факт", "block": 5, "kind": "date", "options": null}, {"key": "act", "label": "Акт сдачи", "block": 5, "kind": "text", "options": null}, {"key": "closing_docs", "label": "Закрывающие документы", "block": 5, "kind": "choice", "options": ["Не подготовлены", "В работе", "Переданы", "Подписаны"]}, {"key": "final_pay", "label": "Окончательный расчёт", "block": 5, "kind": "date", "options": null}, {"key": "warranty", "label": "Гарантия до", "block": 5, "kind": "date", "options": null}, {"key": "folder", "label": "Папка объекта", "block": 5, "kind": "link", "options": null}]}, "objects": [{"id": 1, "company_id": 1, "company": "Партнёр (демо)", "data": {"stage": "Согласование ИД", "design": "Не требуется", "purchase": "Выполнено", "pnr": "Выполнено", "id_prep": "Подготовлена", "code": "ОБ-001", "title": "Городская больница №1. Корпус А", "address": "г. Пример, ул. Образцовая, д. 1", "manager": "Иванов", "contract": "№П-001 от 01.02.2026", "contract_date": "2026-02-01", "equipment": 3200000, "install": 1500000, "paid": 4000000, "total": 4700000, "rest": 700000}, "updated_at": null}, {"id": 2, "company_id": 1, "company": "Партнёр (демо)", "data": {"stage": "Монтаж", "design": "Не требуется", "purchase": "Выполнено", "code": "ОБ-002", "title": "Клиническая больница №2. Блок В", "address": "г. Пример, ул. Образцовая, д. 2", "manager": "Петров", "contract": "№П-002 от 01.03.2026", "contract_date": "2026-03-01", "equipment": 6500000, "install": 2400000, "paid": 6500000, "blocker": "ждём готовности помещений", "total": 8900000, "rest": 2400000}, "updated_at": null}, {"id": 3, "company_id": 1, "company": "Партнёр (демо)", "data": {"stage": "Поставка", "design": "Не требуется", "purchase": "Выполнено", "code": "ОБ-003", "title": "Медицинский центр «Пример». Хранилище", "address": "г. Пример, ул. Образцовая, д. 3", "manager": "Сидоров", "contract": "№П-003 от 01.04.2026", "contract_date": "2026-04-01", "equipment": 12000000, "install": 8000000, "paid": 4000000, "blocker": "ждём готовности помещений", "total": 20000000, "rest": 16000000}, "updated_at": null}, {"id": 4, "company_id": 1, "company": "Партнёр (демо)", "data": {"stage": "Поставка", "design": "Не требуется", "purchase": "Выполнено", "code": "ОБ-004", "title": "Поликлиника №4. Архив", "address": "г. Пример, ул. Образцовая, д. 4", "manager": "Иванов", "contract": "№П-004 от 01.05.2026", "contract_date": "2026-05-01", "equipment": 900000, "install": 450000, "blocker": "ждём готовности помещений", "total": 1350000, "rest": 1350000}, "updated_at": null}, {"id": 5, "company_id": 1, "company": "Партнёр (демо)", "data": {"stage": "Поставка", "design": "Не требуется", "purchase": "Выполнено", "code": "ОБ-005", "title": "Областная больница №5. Серверная", "address": "г. Пример, ул. Образцовая, д. 5", "manager": "Петров", "contract": "№П-005 от 01.06.2026", "contract_date": "2026-06-01", "equipment": 4100000, "install": 2200000, "paid": 1000000, "blocker": "ждём готовности помещений", "total": 6300000, "rest": 5300000}, "updated_at": null}, {"id": 6, "company_id": 1, "company": "Партнёр (демо)", "data": {"stage": "Согласование ИД", "design": "Не требуется", "purchase": "Выполнено", "pnr": "Выполнено", "id_prep": "Подготовлена", "code": "ОБ-006", "title": "Диагностический центр №6. Склад", "address": "г. Пример, ул. Образцовая, д. 6", "manager": "Сидоров", "contract": "№П-006 от 01.07.2026", "contract_date": "2026-07-01", "equipment": 2800000, "install": 1300000, "total": 4100000, "rest": 4100000}, "updated_at": null}], "companies": [], "all_companies": false}
+{
+ "schema": {
+  "blocks": [
+   "Управление",
+   "Договор и расчёты",
+   "Подготовка и поставка",
+   "Монтаж",
+   "ПНР и ИД",
+   "Сдача и закрытие"
+  ],
+  "fields": [
+   {
+    "key": "code",
+    "label": "ID объекта",
+    "block": 0,
+    "kind": "text",
+    "options": null
+   },
+   {
+    "key": "title",
+    "label": "Объект",
+    "block": 0,
+    "kind": "text",
+    "options": null
+   },
+   {
+    "key": "address",
+    "label": "Адрес",
+    "block": 0,
+    "kind": "text",
+    "options": null
+   },
+   {
+    "key": "manager",
+    "label": "Ответственный",
+    "block": 0,
+    "kind": "text",
+    "options": null
+   },
+   {
+    "key": "stage",
+    "label": "Этап",
+    "block": 0,
+    "kind": "choice",
+    "options": [
+     "Договор",
+     "Подготовка",
+     "Закупка",
+     "Поставка",
+     "Монтаж",
+     "Испытания и ПНР",
+     "Подготовка ИД",
+     "Согласование ИД",
+     "Сдача",
+     "Закрытие расчётов",
+     "Завершён",
+     "Приостановлен"
+    ]
+   },
+   {
+    "key": "blocker",
+    "label": "Что мешает",
+    "block": 0,
+    "kind": "long",
+    "options": null
+   },
+   {
+    "key": "contract",
+    "label": "Договор",
+    "block": 1,
+    "kind": "text",
+    "options": null
+   },
+   {
+    "key": "contract_date",
+    "label": "Дата договора",
+    "block": 1,
+    "kind": "date",
+    "options": null
+   },
+   {
+    "key": "equipment",
+    "label": "Оборудование",
+    "block": 1,
+    "kind": "money",
+    "options": null
+   },
+   {
+    "key": "install",
+    "label": "Монтаж",
+    "block": 1,
+    "kind": "money",
+    "options": null
+   },
+   {
+    "key": "total",
+    "label": "Всего по договору",
+    "block": 1,
+    "kind": "calc",
+    "options": null
+   },
+   {
+    "key": "paid",
+    "label": "Получено оплат",
+    "block": 1,
+    "kind": "money",
+    "options": null
+   },
+   {
+    "key": "rest",
+    "label": "Остаток к оплате",
+    "block": 1,
+    "kind": "calc",
+    "options": null
+   },
+   {
+    "key": "note",
+    "label": "Примечание",
+    "block": 1,
+    "kind": "long",
+    "options": null
+   },
+   {
+    "key": "invoice1",
+    "label": "Счёт поставщика 1",
+    "block": 1,
+    "kind": "text",
+    "options": null
+   },
+   {
+    "key": "invoice2",
+    "label": "Счёт поставщика 2",
+    "block": 1,
+    "kind": "text",
+    "options": null
+   },
+   {
+    "key": "design",
+    "label": "Проект / РД",
+    "block": 2,
+    "kind": "choice",
+    "options": [
+     "Не начато",
+     "В работе",
+     "Частично выполнено",
+     "Выполнено",
+     "Не требуется"
+    ]
+   },
+   {
+    "key": "purchase",
+    "label": "Закупка",
+    "block": 2,
+    "kind": "choice",
+    "options": [
+     "Не начато",
+     "В работе",
+     "Частично выполнено",
+     "Выполнено",
+     "Не требуется"
+    ]
+   },
+   {
+    "key": "mount_start",
+    "label": "Начало монтажа",
+    "block": 3,
+    "kind": "date",
+    "options": null
+   },
+   {
+    "key": "mount_end",
+    "label": "Окончание монтажа",
+    "block": 3,
+    "kind": "date",
+    "options": null
+   },
+   {
+    "key": "mount_tech",
+    "label": "Технологическая часть",
+    "block": 3,
+    "kind": "choice",
+    "options": [
+     "Не начато",
+     "В работе",
+     "Частично выполнено",
+     "Выполнено",
+     "Не требуется"
+    ]
+   },
+   {
+    "key": "mount_elec",
+    "label": "Электротехническая часть",
+    "block": 3,
+    "kind": "choice",
+    "options": [
+     "Не начато",
+     "В работе",
+     "Частично выполнено",
+     "Выполнено",
+     "Не требуется"
+    ]
+   },
+   {
+    "key": "mounted",
+    "label": "Что смонтировано",
+    "block": 3,
+    "kind": "long",
+    "options": null
+   },
+   {
+    "key": "to_mount",
+    "label": "Что осталось",
+    "block": 3,
+    "kind": "long",
+    "options": null
+   },
+   {
+    "key": "pnr",
+    "label": "Испытания и ПНР",
+    "block": 4,
+    "kind": "choice",
+    "options": [
+     "Не начато",
+     "В работе",
+     "Частично выполнено",
+     "Выполнено",
+     "Не требуется"
+    ]
+   },
+   {
+    "key": "id_prep",
+    "label": "ИД — подготовка",
+    "block": 4,
+    "kind": "choice",
+    "options": [
+     "Не начата",
+     "В работе",
+     "Подготовлена",
+     "Не требуется"
+    ]
+   },
+   {
+    "key": "id_sent",
+    "label": "ИД передана",
+    "block": 4,
+    "kind": "date",
+    "options": null
+   },
+   {
+    "key": "id_accepted",
+    "label": "ИД принята",
+    "block": 4,
+    "kind": "date",
+    "options": null
+   },
+   {
+    "key": "remarks",
+    "label": "Замечания",
+    "block": 4,
+    "kind": "long",
+    "options": null
+   },
+   {
+    "key": "handover_plan",
+    "label": "Сдача — план",
+    "block": 5,
+    "kind": "date",
+    "options": null
+   },
+   {
+    "key": "handover_fact",
+    "label": "Сдача — факт",
+    "block": 5,
+    "kind": "date",
+    "options": null
+   },
+   {
+    "key": "act",
+    "label": "Акт сдачи",
+    "block": 5,
+    "kind": "text",
+    "options": null
+   },
+   {
+    "key": "closing_docs",
+    "label": "Закрывающие документы",
+    "block": 5,
+    "kind": "choice",
+    "options": [
+     "Не подготовлены",
+     "В работе",
+     "Переданы",
+     "Подписаны"
+    ]
+   },
+   {
+    "key": "final_pay",
+    "label": "Окончательный расчёт",
+    "block": 5,
+    "kind": "date",
+    "options": null
+   },
+   {
+    "key": "warranty",
+    "label": "Гарантия до",
+    "block": 5,
+    "kind": "date",
+    "options": null
+   },
+   {
+    "key": "folder",
+    "label": "Папка объекта",
+    "block": 5,
+    "kind": "link",
+    "options": null
+   }
+  ]
+ },
+ "objects": [
+  {
+   "id": 1,
+   "company_id": 1,
+   "company": "Партнёр (демо)",
+   "data": {
+    "stage": "Согласование ИД",
+    "design": "Не требуется",
+    "purchase": "Выполнено",
+    "pnr": "Выполнено",
+    "id_prep": "Подготовлена",
+    "code": "ОБ-001",
+    "title": "Городская больница №1. Корпус А",
+    "address": "г. Пример, ул. Образцовая, д. 1",
+    "manager": "Иванов",
+    "contract": "№П-001 от 01.02.2026",
+    "contract_date": "2026-02-01",
+    "equipment": 3200000,
+    "install": 1500000,
+    "paid": 4000000,
+    "total": 4700000,
+    "rest": 700000,
+    "clients": [
+     {
+      "name": "Смирнова Анна Викторовна",
+      "post": "Главный инженер",
+      "company": "ГБУЗ «Городская больница №1» (пример)",
+      "phone": "+7 900 000-00-01",
+      "email": "a.smirnova@example.com"
+     },
+     {
+      "name": "Кузнецов Олег Петрович",
+      "post": "Заместитель главного врача по АХЧ",
+      "company": "ГБУЗ «Городская больница №1» (пример)",
+      "phone": "+7 900 000-00-02",
+      "email": "o.kuznetsov@example.com"
+     }
+    ],
+    "feed": [
+     {
+      "at": "2026-10-14T10:20:00",
+      "author": "Иванов",
+      "text": "Передали исполнительную документацию на согласование заказчику."
+     },
+     {
+      "at": "2026-10-17T15:05:00",
+      "author": "Петров",
+      "text": "Заказчик вернул ИД с двумя замечаниями, правим до пятницы."
+     }
+    ]
+   },
+   "updated_at": null
+  },
+  {
+   "id": 2,
+   "company_id": 1,
+   "company": "Партнёр (демо)",
+   "data": {
+    "stage": "Монтаж",
+    "design": "Не требуется",
+    "purchase": "Выполнено",
+    "code": "ОБ-002",
+    "title": "Клиническая больница №2. Блок В",
+    "address": "г. Пример, ул. Образцовая, д. 2",
+    "manager": "Петров",
+    "contract": "№П-002 от 01.03.2026",
+    "contract_date": "2026-03-01",
+    "equipment": 6500000,
+    "install": 2400000,
+    "paid": 6500000,
+    "blocker": "ждём готовности помещений",
+    "total": 8900000,
+    "rest": 2400000,
+    "clients": [
+     {
+      "name": "Волкова Ирина Сергеевна",
+      "post": "Руководитель проекта",
+      "company": "ООО «Генподрядчик» (пример)",
+      "phone": "+7 900 000-00-03",
+      "email": "i.volkova@example.com"
+     }
+    ],
+    "feed": [
+     {
+      "at": "2026-10-12T09:00:00",
+      "author": "Петров",
+      "text": "Монтаж трубной разводки на 3-м этаже завершён."
+     }
+    ]
+   },
+   "updated_at": null
+  },
+  {
+   "id": 3,
+   "company_id": 1,
+   "company": "Партнёр (демо)",
+   "data": {
+    "stage": "Поставка",
+    "design": "Не требуется",
+    "purchase": "Выполнено",
+    "code": "ОБ-003",
+    "title": "Медицинский центр «Пример». Хранилище",
+    "address": "г. Пример, ул. Образцовая, д. 3",
+    "manager": "Сидоров",
+    "contract": "№П-003 от 01.04.2026",
+    "contract_date": "2026-04-01",
+    "equipment": 12000000,
+    "install": 8000000,
+    "paid": 4000000,
+    "blocker": "ждём готовности помещений",
+    "total": 20000000,
+    "rest": 16000000,
+    "clients": [
+     {
+      "name": "Орлов Денис Андреевич",
+      "post": "Инженер технадзора",
+      "company": "АО «Медцентр» (пример)",
+      "phone": "+7 900 000-00-04",
+      "email": "d.orlov@example.com"
+     }
+    ],
+    "feed": [
+     {
+      "at": "2026-10-15T11:30:00",
+      "author": "Сидоров",
+      "text": "Помещение не готово, ждём письма от генподрядчика."
+     }
+    ]
+   },
+   "updated_at": null
+  },
+  {
+   "id": 4,
+   "company_id": 1,
+   "company": "Партнёр (демо)",
+   "data": {
+    "stage": "Поставка",
+    "design": "Не требуется",
+    "purchase": "Выполнено",
+    "code": "ОБ-004",
+    "title": "Поликлиника №4. Архив",
+    "address": "г. Пример, ул. Образцовая, д. 4",
+    "manager": "Иванов",
+    "contract": "№П-004 от 01.05.2026",
+    "contract_date": "2026-05-01",
+    "equipment": 900000,
+    "install": 450000,
+    "blocker": "ждём готовности помещений",
+    "total": 1350000,
+    "rest": 1350000
+   },
+   "updated_at": null
+  },
+  {
+   "id": 5,
+   "company_id": 1,
+   "company": "Партнёр (демо)",
+   "data": {
+    "stage": "Поставка",
+    "design": "Не требуется",
+    "purchase": "Выполнено",
+    "code": "ОБ-005",
+    "title": "Областная больница №5. Серверная",
+    "address": "г. Пример, ул. Образцовая, д. 5",
+    "manager": "Петров",
+    "contract": "№П-005 от 01.06.2026",
+    "contract_date": "2026-06-01",
+    "equipment": 4100000,
+    "install": 2200000,
+    "paid": 1000000,
+    "blocker": "ждём готовности помещений",
+    "total": 6300000,
+    "rest": 5300000
+   },
+   "updated_at": null
+  },
+  {
+   "id": 6,
+   "company_id": 1,
+   "company": "Партнёр (демо)",
+   "data": {
+    "stage": "Согласование ИД",
+    "design": "Не требуется",
+    "purchase": "Выполнено",
+    "pnr": "Выполнено",
+    "id_prep": "Подготовлена",
+    "code": "ОБ-006",
+    "title": "Диагностический центр №6. Склад",
+    "address": "г. Пример, ул. Образцовая, д. 6",
+    "manager": "Сидоров",
+    "contract": "№П-006 от 01.07.2026",
+    "contract_date": "2026-07-01",
+    "equipment": 2800000,
+    "install": 1300000,
+    "total": 4100000,
+    "rest": 4100000
+   },
+   "updated_at": null
+  }
+ ],
+ "companies": [],
+ "all_companies": false
+}
