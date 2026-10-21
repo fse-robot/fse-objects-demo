@@ -60,8 +60,8 @@ h1{font-size:28px;line-height:1.15;font-weight:800;letter-spacing:-.02em}
 .tot b{font-size:20px;font-weight:800;letter-spacing:-.01em;text-align:right;font-variant-numeric:tabular-nums}
 .tot b.r{color:var(--ink)}
 /* список */
-:root{--s0:#64748B;--s1:#0E7490;--s2:#1D5BB0;--s3:#4F46E5;--s4:#7C3AED;--s5:#C026D3;--s6:#B45309;--s7:#CA8A04;--s8:#0F766E;--s9:#65A30D;--s10:#15803D;--s11:#9CA3AF}
-[data-theme=d]{--s0:#94A3B8;--s1:#22B8D6;--s2:#6FA3FF;--s3:#8B85FF;--s4:#A98BFF;--s5:#E879F9;--s6:#F08A3C;--s7:#EAB308;--s8:#2DD4BF;--s9:#A3E635;--s10:#4ADE80;--s11:#6B7280}
+:root{--s0:#D9645A;--s1:#DE7A55;--s2:#E29052;--s3:#E5A651;--s4:#E6BA52;--s5:#E3C85A;--s6:#CFC85E;--s7:#B3C162;--s8:#96B866;--s9:#7DAE6A;--s10:#66A36C;--s11:#9CA3AF}
+[data-theme=d]{--s0:#D9645A;--s1:#DE7A55;--s2:#E29052;--s3:#E5A651;--s4:#E6BA52;--s5:#E3C85A;--s6:#CFC85E;--s7:#B3C162;--s8:#96B866;--s9:#7DAE6A;--s10:#66A36C;--s11:#6B7280}
 .rows{display:flex;flex-direction:column;gap:8px}
 .row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-areas:"nm nm nm nm" "id rs re ok";align-items:center;gap:4px 8px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:12px 14px;text-align:left;width:100%}
 .row:hover{border-color:var(--field)}
@@ -132,18 +132,15 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.4}
 .rem small{width:100%;text-align:right;display:flex;justify-content:flex-end;gap:4px;align-items:center;font-size:15px}
 .err-t{color:var(--red);font-size:14px;font-weight:600}
 /* цепочка этапов */
-.bars{display:flex;gap:3px;margin:2px 0 10px}
-.bars i{flex:1;height:8px;border-radius:4px;background:var(--soft)}
-.bars i.on{background:var(--blue)}.bars.done i.on{background:var(--green)}.bars.stop i.on{background:var(--amber)}
-.cur{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
+.bars{display:flex;gap:4px;margin:0 -2px}
+.bars button{flex:1;padding:10px 2px;border-radius:8px;min-width:0}
+.bars button i{display:block;height:12px;border-radius:6px;background:var(--c);opacity:.3}
+.bars button.on i{opacity:1}.bars button:hover i{opacity:.75}.bars button.on:hover i{opacity:1}
+.bars button.now i{height:18px;margin-top:-3px;box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--c)}
+.cur{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:2px}
+.pz{width:40px;height:40px;border-radius:10px;display:inline-grid;place-items:center;color:var(--mut);border:1px solid var(--line);margin-left:8px;vertical-align:middle}
+.pz.on{background:var(--s11);border-color:var(--s11);color:#111}.pz svg.i{width:20px;height:20px}
 .cur b{font-size:20px}.cur span{color:var(--mut);font-size:15px;white-space:nowrap}
-.steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin:0 -16px;padding-left:16px;padding-right:16px}
-.steps button{flex:none;white-space:nowrap;height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--line);font-size:15px;color:var(--mut);display:flex;align-items:center;gap:4px}
-.steps button svg.i{width:16px;height:16px}
-.steps button.ok{color:var(--ink)}
-.steps button.cur{background:var(--ink);border-color:var(--ink);color:var(--card);font-weight:700;margin:0}
-.steps .stopb{margin-left:6px;color:var(--amber);border-color:var(--amber)}
-.steps .stopb.cur{background:var(--amber);border-color:var(--amber);color:#111}
 /* лента */
 .new{display:flex;gap:8px;align-items:flex-end;margin-bottom:12px}
 .new .in{flex:1}
@@ -152,6 +149,13 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.4}
 .note{display:flex;gap:12px;padding:14px 0}.note+.note{border-top:1px solid var(--line)}
 .note .h{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.note .h span{color:var(--mut);font-size:14px}
 .note p{margin-top:2px;text-wrap:pretty}
+.feed{display:flex;flex-direction:column}
+.feed .list{flex:1}
+.feed .new{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+.ev{display:flex;gap:8px;align-items:center;padding:8px 0;color:var(--mut);font-size:14px}
+.ev svg.i{width:16px;height:16px;flex:none}.ev b{color:var(--ink);font-weight:600}
+.lay{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}.lay>*{min-width:0}
+.cli{display:grid;gap:12px}.cli .ct+.ct{border-top:1px solid var(--line);padding-top:12px}
 /* клиенты */
 .ct .nm{font-size:18px}
 .ct .meta{margin:2px 0 10px}
@@ -181,9 +185,12 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.4}
   .toast{bottom:24px}
   .grid.g2{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
   .grid.g2 .wide{grid-column:1/-1}
+  .lay{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
+  .lay .wide{grid-column:1/-1}
+  .feed{position:sticky;top:76px;max-height:calc(100vh - 100px)}
+  .feed .list{overflow:auto;margin:0 -4px;padding:0 4px}
   .tabs .seg{width:auto}.tabs .seg button{flex:none;padding:0 18px}
   .oh h1{font-size:28px}
-  .steps{flex-wrap:wrap;overflow:visible;margin:0;padding:0}
 }
 /* строка списка на широких экранах */
 @media(min-width:700px){
@@ -232,6 +239,7 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.4}
 <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
 <symbol id="send" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
 <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
 <symbol id="check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
 <symbol id="bld" viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 012-2h6a2 2 0 012 2v16M14 9h4a2 2 0 012 2v10M8 7h2M8 11h2M8 15h2M3 21h18"/></symbol>
 <symbol id="cloud" viewBox="0 0 24 24"><path d="M7 18a5 5 0 01-.6-10A6 6 0 0118 9a4.5 4.5 0 01-.5 9H7zM3 3l18 18"/></symbol>
@@ -262,7 +270,7 @@ const o3=OBJ[2];
 o3.feed=[
  {a:'Сидорова Е.',t:'Сегодня, 14:20',x:'Охрана не пустила бригаду: пропуска не оформлены. Написала заместителю главврача, обещали до пятницы.'},
  {a:'Иванов А.',t:'Вчера, 09:05',x:'Модули МГП отгружены со склада, ждём на объекте 23.10.'},
- {a:'Петров С.',t:'18 окт, 16:40',x:'Аванс 4 000 000,00 ₽ поступил. Второй платёж по графику — до 09.10, пока нет.'},
+ {a:'Петров С.',t:'18 окт, 16:40',x:'Аванс 4 000 000 ₽ поступил. Второй платёж по графику — до 09.10, пока нет.'},
 ];
 o3.cli=[
  {f:'Кузнецова Ольга Викторовна',p:'Заместитель главного врача по АХЧ',c:'ООО «Медицинский центр «Пример»',ph:'+7 (916) 204-18-77',em:'kuznetsova@primer-med.ru'},
@@ -331,62 +339,58 @@ function empty(){return head().replace('<div class="seg"','<div style="display:n
 function load(){return head()+`<div class="tot" aria-busy="true"><div><span>Объектов</span><b>…</b></div><div><span>По договорам</span><b>…</b></div><div><span>Остаток</span><b>…</b></div></div><div class="rows">`+[70,55,80,60].map(w=>`<div class="sk"><i style="width:${w}%;height:18px"></i><i style="width:35%"></i><i style="width:50%;align-self:flex-end;height:18px"></i></div>`).join('')+`</div><span class="sr" role="status">Загрузка</span>`}
 
 function chain(o){
-  const st=o.st,n=st===STOP?0:st+1;
+  const st=o.st;
   return `<section class="box wide"><h2>Этап</h2>
-   <div class="cur"><b>${ST[st]}</b><span>${st===STOP?'':`${Math.min(n,11)} из 11`}</span></div>
-   <div class="bars ${stc(st)}">${ST.slice(0,11).map((_,i)=>`<i class="${st===STOP?(i<=2?'on':''):i<=st?'on':''}"></i>`).join('')}</div>
-   <div class="steps">${ST.map((s,i)=>`<button data-st="${i}" class="${i===st?'cur':i<st&&st!==STOP?'ok':''} ${i===STOP?'stopb':''}">${i<st&&st!==STOP?ic('check'):''}${s}</button>`).join('')}</div></section>`;
+   <div class="cur"><b>${ST[st]}</b><span>${st===STOP?'':`${st+1} из 11`}<button class="pz ${st===STOP?'on':''}" data-st="${STOP}" title="${ST[STOP]}">${ic('pause',ST[STOP])}</button></span></div>
+   <div class="bars">${ST.slice(0,11).map((s,i)=>`<button data-st="${i}" title="${s}" aria-label="${s}" class="${st!==STOP&&i<=st?'on':''} ${i===st?'now':''}" style="--c:var(--s${i})"><i></i></button>`).join('')}</div></section>`;
 }
 const fld=(k,l,v,o={})=>`<div class="fl"><label for="f-${k}">${l}${o.err?'<span class="err-t">Не сохранено</span>':''}</label>${o.ta?`<textarea class="in" id="f-${k}" data-k="${k}" rows="2" placeholder="${o.ph||''}">${esc(v)}</textarea>`:`<input class="in ${o.n?'n':''} ${o.err?'bad':''}" id="f-${k}" data-k="${k}" ${o.type?`type="${o.type}"`:''} ${o.n?'inputmode="decimal"':''} value="${esc(o.n?(+v||0).toLocaleString('ru-RU',{maximumFractionDigits:0}):v)}" placeholder="${o.ph||''}">`}</div>`;
 function remHtml(o){const l=late(o);return `<span>Остаток</span><b>${rub(rest(o))}</b>${l?`<small class="od">${ic('clock')}Просрочка ${l}&nbsp;дн. · до ${fd(o.due)}</small>`:''}`}
-function tabObj(o){
-  return `<div class="grid g2">${chain(o)}
-   <section class="box"><h2>Деньги</h2>
+function left(o){
+  return `<section class="box"><h2>Деньги</h2>
     <div class="big" id="tot">${rub(total(o))}</div><small>Всего по договору</small>
     <div class="two">${fld('eq','Оборудование',o.eq,{n:1})}${fld('mo','Монтаж',o.mo,{n:1})}</div>
     <div class="two">${fld('paid','Получено',o.paid,{n:1,err:S.err})}${fld('due','Оплатить до',o.due,{type:'date'})}</div>
     <div class="rem" id="rem">${remHtml(o)}</div></section>
-   <div class="grid">
-    <section class="box"><h2>Договор</h2><div class="two">${fld('dn','Номер',o.dn)}${fld('dd','Дата',o.dd,{type:'date'})}</div></section>
-    <section class="box"><h2>Объект</h2>
+   <section class="box"><h2>Договор</h2><div class="two">${fld('dn','Номер',o.dn)}${fld('dd','Дата',o.dd,{type:'date'})}</div></section>
+   <section class="box"><h2>Объект</h2>
      ${fld('block','Что мешает',o.block,{ta:1,ph:'Ничего'})}
      <div class="fl"><label for="f-resp">Ответственный</label><select class="in" id="f-resp" data-k="resp">${PEOPLE.map(p=>`<option${p===o.resp?' selected':''}>${p}</option>`).join('')}</select></div>
      <div class="fl"><span class="lb"><label for="f-addr">Адрес</label>${o.addr?`<a href="https://yandex.ru/maps/?text=${encodeURIComponent(o.addr)}" target="_blank" title="На карте" style="display:flex;align-items:center;gap:4px">${ic('pin')}Карта</a>`:''}</span><textarea class="in" id="f-addr" data-k="addr" rows="2">${esc(o.addr)}</textarea></div>
-    </section></div></div>`;
-}
-function tabFeed(o){
-  return `<div class="box" style="max-width:760px"><form class="new" data-f="note"><label class="sr" for="nt">Заметка</label><textarea class="in" id="nt" rows="1" placeholder="Заметка"></textarea><button class="send" title="Добавить" disabled>${ic('send','Добавить')}</button></form>
-   ${o.feed.length?o.feed.map(n=>`<article class="note"><span class="ava">${esc(n.a[0])}</span><div><div class="h"><b>${esc(n.a)}</b><span>${esc(n.t)}</span></div><p>${esc(n.x)}</p></div></article>`).join(''):`<div class="none">Заметок нет</div>`}</div>`;
-}
-function tabCli(o){
-  return `<div class="grid g2">`+o.cli.map(c=>`<article class="box ct"><div class="nm">${esc(c.f)}</div><div class="meta">${esc([c.p,c.c].filter(Boolean).join(' · '))}</div>
+   </section>
+   <section class="box"><h2>Клиенты</h2><div class="cli">`+o.cli.map(c=>`<article class="ct"><div class="nm">${esc(c.f)}</div><div class="meta">${esc([c.p,c.c].filter(Boolean).join(' · '))}</div>
    <div class="acts">${c.ph?`<a class="act" href="tel:${c.ph.replace(/[^\d+]/g,'')}" title="Позвонить">${ic('call','Позвонить')}<span>${esc(c.ph)}</span></a>`:''}${c.em?`<a class="act" href="mailto:${esc(c.em)}" title="Написать">${ic('mail','Написать')}<span>${esc(c.em)}</span></a>`:''}</div></article>`).join('')+
-   (S.addCli?`<form class="box" data-f="cli"><h2>Новый контакт</h2>
+   (S.addCli?`<form data-f="cli">
      ${[['f','ФИО'],['p','Должность'],['c','Юрлицо'],['ph','Телефон','tel'],['em','Почта','email']].map(([k,l,t])=>`<div class="fl"><label for="c-${k}">${l}</label><input class="in" id="c-${k}" name="${k}" ${t?`type="${t}"`:''} ${k==='f'?'required':''}></div>`).join('')}
      <div class="btns"><button class="pri">Сохранить</button><button type="button" class="sec" data-a="cli-x">Отмена</button></div></form>`
-   :`<button class="ghost" data-a="cli-add">${ic('add')}Контакт</button>`)+`</div>`;
+   :`<button class="ghost" data-a="cli-add">${ic('add')}Контакт</button>`)+`</div></section>`;
 }
+function feed(o){
+  const L=o.feed.slice().reverse();
+  return `<section class="box feed"><h2>Лента</h2><div class="list" id="fl">${L.length?L.map(n=>n.ev?`<div class="ev">${ic('clock')}<span><b>${esc(n.a)}</b> · ${esc(n.t)} · ${esc(n.x)}</span></div>`:`<article class="note"><span class="ava">${esc(n.a[0])}</span><div><div class="h"><b>${esc(n.a)}</b><span>${esc(n.t)}</span></div><p>${esc(n.x)}</p></div></article>`).join(''):`<div class="none">Событий нет</div>`}</div>
+   <form class="new" data-f="note"><label class="sr" for="nt">Примечание</label><textarea class="in" id="nt" rows="1" placeholder="Примечание"></textarea><button class="send" title="Добавить" disabled>${ic('send','Добавить')}</button></form></section>`;
+}
+function log(o,x){o.feed.unshift({a:'Демо',t:'Сейчас',x,ev:1})}
 function card(){
   const o=cur();
-  const T=[['obj','Объект'],['feed','Лента',o.feed.length],['cli','Клиенты',o.cli.length]];
   return `<button class="back" data-a="v-list">${ic('back')}Объекты</button>
    <div class="oh"><h1>${esc(o.name)}</h1><div class="meta"><span class="id">${o.id}</span>${chip(o.st)}${late(o)?`<span class="od" style="display:flex;gap:4px;align-items:center">${ic('clock')}${late(o)}&nbsp;дн.</span>`:''}</div></div>
-   <div class="tabs"><div class="seg" role="tablist">${T.map(([k,l,n])=>`<button role="tab" aria-pressed="${S.tab===k}" data-tab="${k}">${l}${n?` <span class="n">${n}</span>`:''}</button>`).join('')}</div></div>
-   ${S.tab==='feed'?tabFeed(o):S.tab==='cli'?tabCli(o):tabObj(o)}`;
+   <div class="lay">${chain(o)}<div class="grid">${left(o)}</div>${feed(o)}</div>`;
 }
 function toast(){const t=S.toast;if(!t)return '';return `<div class="toast ${t.bad?'bad':'nob'}" role="status">${t.bad?ic('cloud'):ic('check')}${t.t}${t.bad?'<button data-a="retry">Повторить</button>':''}</div>`}
 let tt;
 function say(t,bad){S.toast={t,bad};paintToast();clearTimeout(tt);if(!bad)tt=setTimeout(()=>{S.toast=null;paintToast()},2200)}
 function paintToast(){document.querySelector('.toast')?.remove();app.insertAdjacentHTML('beforeend',toast())}
+function scrollFeed(){const F=document.getElementById('fl');if(F)F.scrollTop=F.scrollHeight}
 function render(){
   const v={list,stages,card,empty,load}[S.s]||list;
-  app.innerHTML=bar()+`<main>${v()}</main>`+(['list','stages','empty'].includes(S.s)?`<button class="fab" data-a="new" title="Добавить объект">${ic('add','Добавить объект')}</button>`:'')+toast();
+  app.innerHTML=bar()+`<main>${v()}</main>`+(['list','stages','empty'].includes(S.s)?`<button class="fab" data-a="new" title="Добавить объект">${ic('add','Добавить объект')}</button>`:'')+toast();scrollFeed();
 }
 app.addEventListener('click',e=>{
   const b=e.target.closest('[data-a],[data-open],[data-tab],[data-st]');if(!b)return;
   if(b.dataset.open)return go({s:'card',id:b.dataset.open,tab:'obj',addCli:false});
   if(b.dataset.tab)return go({tab:b.dataset.tab});
-  if(b.dataset.st){cur().st=+b.dataset.st;render();return say('Сохранено')}
+  if(b.dataset.st){const o=cur(),n=+b.dataset.st;if(n===o.st)return;log(o,'Этап: '+ST[n]);o.st=n;render();scrollFeed();return say('Сохранено')}
   const a=b.dataset.a;
   if(a==='theme'){const d=document.documentElement;d.dataset.theme=d.dataset.theme==='d'?'':'d';render()}
   else if(a==='search'){S.search=!S.search;render();document.getElementById('q2')?.focus()}
@@ -404,12 +408,14 @@ app.addEventListener('change',e=>{
   o[k]=['eq','mo','paid'].includes(k)?num(e.target.value):e.target.value;
   if(['eq','mo','paid'].includes(k))e.target.value=o[k].toLocaleString('ru-RU',{maximumFractionDigits:0});
   document.getElementById('tot').textContent=rub(total(o));document.getElementById('rem').innerHTML=remHtml(o);
+  const lb=e.target.closest('.fl')?.querySelector('label')?.textContent.replace('Не сохранено','');
+  log(o,lb+': '+(e.target.value||'—'));const F=document.getElementById('fl'),x=document.createElement('div');x.innerHTML=feed(o);F.replaceWith(x.querySelector('#fl'));scrollFeed();
   if(S.err)return say('Не сохранено',1);say('Сохранено');
 });
 app.addEventListener('submit',e=>{
   e.preventDefault();const f=e.target,o=cur();
-  if(f.dataset.f==='note'){const x=f.querySelector('textarea').value.trim();if(!x)return;o.feed.unshift({a:'Демо',t:'Сейчас',x});render();say('Добавлено')}
-  if(f.dataset.f==='cli'){const d=Object.fromEntries(new FormData(f));o.cli.push(d);S.addCli=false;render();say('Добавлено')}
+  if(f.dataset.f==='note'){const x=f.querySelector('textarea').value.trim();if(!x)return;o.feed.unshift({a:'Демо',t:'Сейчас',x});render();scrollFeed();say('Добавлено')}
+  if(f.dataset.f==='cli'){const d=Object.fromEntries(new FormData(f));o.cli.push(d);log(o,'Контакт: '+d.f);S.addCli=false;render();say('Добавлено')}
 });
 
 render();
