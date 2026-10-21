@@ -66,11 +66,17 @@ h1{font-size:28px;line-height:1.15;font-weight:800;letter-spacing:-.02em}
 .row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-areas:"nm nm nm nm" "id rs re ok";align-items:center;gap:4px 8px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:12px 14px;text-align:left;width:100%}
 .row:hover{border-color:var(--field)}
 .row{position:relative}.row.ed:hover{border-color:var(--line)}
-.ce{cursor:pointer;border-radius:8px;background:var(--soft);padding:2px 6px;margin:-2px -6px}
-.ce:hover{box-shadow:inset 0 0 0 1px var(--field)}
-.sd.ce{width:16px;height:16px;padding:0;margin:0;box-shadow:0 0 0 3px var(--soft)}
-.pen{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--soft);color:var(--ink);flex:none}
-.pen[aria-pressed=true]{background:var(--redbg);color:#fff}
+.row{cursor:pointer}
+.ec{display:inline-flex;align-items:center;gap:2px;max-width:100%;min-width:0;vertical-align:middle}
+.ec>span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.pe{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--mut)}
+.pe svg.i{width:16px;height:16px}.pe:hover{background:var(--soft);color:var(--ink)}
+.sel{position:relative;display:inline-flex;align-items:center;max-width:100%;border-radius:8px;cursor:pointer}
+.sel:hover{background:var(--soft)}
+.ov{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px}
+.sdw{width:28px;height:28px;justify-content:center;flex:none;margin:-9px -4px -9px -9px}
+@media(hover:hover){.pe{opacity:.35}.row:hover .pe{opacity:.8}.pe:hover{opacity:1!important}}
+@media(min-width:700px){.sdw{display:none}.c-to,.c-re{text-align:right}.c-to .ec,.c-re .ec{justify-content:flex-end}}
 .pop{position:absolute;top:calc(100% + 4px);left:0;z-index:20;width:min(320px,100%);background:var(--card);border:1px solid var(--field);border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.22);padding:12px;display:grid;gap:6px;cursor:default;font-size:16px;font-weight:400;color:var(--ink)}
 .pop label{font-size:14px;color:var(--mut)}
 .c-nm{grid-area:nm;display:flex;align-items:center;gap:8px;min-width:0}
@@ -202,7 +208,7 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.4}
 }
 /* строка списка на широких экранах */
 @media(min-width:700px){
-  .row,.rhead{grid-template-areas:none;grid-template-columns:minmax(0,1fr) 170px 120px 130px 40px;gap:12px;padding:12px 18px}
+  .row,.rhead{grid-template-areas:none;grid-template-columns:minmax(0,1fr) 170px 120px 150px 40px;gap:12px;padding:12px 18px}
   .row>*,.rhead>*{grid-area:auto}
   .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
   .sd,.c-id{display:none}
@@ -212,12 +218,12 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.4}
   .rhead .c-re{font-weight:400}
 }
 @media(min-width:900px){
-  .row,.rhead{grid-template-columns:72px minmax(0,1fr) 170px 120px 96px 130px 40px}
+  .row,.rhead{grid-template-columns:72px minmax(0,1fr) 170px 120px 126px 150px 40px}
   .c-id,.c-du{display:block}
   .c-du{font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
 }
 @media(min-width:1200px){
-  .row,.rhead{grid-template-columns:72px minmax(0,2fr) 170px 120px minmax(0,1fr) 96px 130px 130px 40px}
+  .row,.rhead{grid-template-columns:72px minmax(0,2fr) 170px 120px minmax(0,1fr) 126px 150px 150px 40px}
   .c-bl,.c-to{display:block}
   .c-bl{color:var(--mut);font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .c-to{font-size:15px;color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
@@ -319,7 +325,6 @@ function head(){
    <div class="seg" role="group" aria-label="Вид">
     <button aria-pressed="${S.s==='list'}" data-a="v-list" title="Списком">${ic("list","Списком")}</button>
     <button aria-pressed="${S.s==='stages'}" data-a="v-stages" title="По этапам">${ic("cols","По этапам")}</button></div>
-   ${S.s==='list'?`<button class="pen" data-a="edit" aria-pressed="${!!S.ed}" title="Править">${ic('pen','Править')}</button>`:''}
    <button class="add" data-a="new">${ic('add')}Объект</button></div>`;
 }
 const filt=()=>{const q=S.q.trim().toLowerCase();return q?OBJ.filter(o=>(o.name+o.id+o.addr+o.resp).toLowerCase().includes(q)):OBJ};
@@ -341,17 +346,21 @@ function placePop(){
 function list(){
   const L=filt();
   return head()+totals(L)+`<div class="rhead"><span class="c-id">ID</span><span class="c-nm">Объект</span><span class="c-st">Этап</span><span class="c-rs">Ответственный</span><span class="c-bl">Что мешает</span><span class="c-du">Оплатить до</span><span class="c-to">По договору</span><span class="c-re">Остаток</span><span></span></div><div class="rows">`+
-  (L.length?L.map(o=>{const r=rest(o),l=late(o),E=S.ed,e=k=>E?` data-e="${k}" tabindex="0" role="button"`:'',c=E?'ce':'';return `<${E?'div':'button'} class="row ${E?'ed':''}" ${E?`data-id="${o.id}"`:`data-open="${o.id}"`}>
+  (L.length?L.map(o=>{const r=rest(o),l=late(o),
+    pe=(k,t)=>`<span class="ec"><span>${t}</span><button class="pe" data-e="${k}" title="Изменить: ${k==='to'?'По договору':LB[k]}">${ic('pen','Изменить')}</button></span>`,
+    pe0=(k,t)=>`<span class="ec"><button class="pe" data-e="${k}" title="Изменить: ${LB[k]}">${ic('pen','Изменить')}</button><span>${t}</span></span>`,
+    sel=(k,t,cl='')=>`<span class="sel ${cl}">${t}<select class="ov" data-pk="${k}" data-id="${o.id}" aria-label="${LB[k]}">${(k==='st'?ST.map((x,i)=>[i,x]):PEOPLE.map(x=>[x,x])).map(([v,x])=>`<option value="${v}"${(k==='st'?o.st===v:o.resp===v)?' selected':''}>${x}</option>`).join('')}</select></span>`;
+   return `<div class="row" data-open="${o.id}" data-id="${o.id}" tabindex="0" role="link">
     <span class="c-id id">${o.id}</span>
-    <span class="c-nm"><i class="sd ${c}" style="background:var(--s${o.st})" title="${ST[o.st]}"${e('st')}></i><span class="nm"><span class="${c}" title="${esc(o.name)}"${e('name')}>${esc(o.name)}</span></span></span>
-    <span class="c-st"><span class="${c}"${e('st')}>${chip(o.st)}</span></span><span class="c-rs"><span class="${c}"${e('resp')}>${esc(o.resp)}</span></span>
-    <span class="c-bl" title="${esc(o.block)}"><span class="${c}"${e('block')}>${esc(o.block)||'—'}</span></span>
-    <span class="c-du ${l?'od':''}"><span class="${c}"${e('due')}>${fd(o.due)||'—'}</span></span>
-    <span class="c-to"><span class="${c}"${e('to')}>${rub(total(o))}</span></span>
-    <span class="c-re"><span class="${c}"${e('paid')}>${r?rub(r):'Оплачено'}</span></span>
+    <span class="c-nm">${sel('st',`<i class="sd" style="background:var(--s${o.st})" title="${ST[o.st]}"></i>`,'sdw')}<span class="nm" title="${esc(o.name)}">${pe('name',esc(o.name))}</span></span>
+    <span class="c-st">${sel('st',chip(o.st))}</span><span class="c-rs">${sel('resp',esc(o.resp))}</span>
+    <span class="c-bl" title="${esc(o.block)}">${pe('block',esc(o.block)||'—')}</span>
+    <span class="c-du ${l?'od':''}">${pe('due',fd(o.due)||'—')}</span>
+    <span class="c-to">${pe0('to',rub(total(o)))}</span>
+    <span class="c-re">${pe0('paid',r?rub(r):'Оплачено')}</span>
     <span class="c-ok">${o.block?`<span class="bw" title="${esc(o.block)}">${ic('warn','Что мешает')}</span>`:''}<i class="dot ${l?'late':''}" title="${l?`Просрочка ${l} дн.`:'В графике'}"></i></span>
     ${S.pe&&S.pe.id===o.id?pop(o,S.pe.k):''}
-  </${E?'div':'button'}>`}).join(''):`<div class="none">Ничего не найдено</div>`)+`</div>`;
+  </div>`}).join(''):`<div class="none">Ничего не найдено</div>`)+`</div>`;
 }
 function stages(){
   const L=filt();
@@ -413,7 +422,7 @@ function render(){
   app.innerHTML=bar()+`<main>${v()}</main>`+(['list','stages','empty'].includes(S.s)?`<button class="fab" data-a="new" title="Добавить объект">${ic('add','Добавить объект')}</button>`:'')+toast();scrollFeed();if(S.pe)placePop();
 }
 app.addEventListener('click',e=>{
-  if(e.target.closest('.pop'))return;
+  if(e.target.closest('.pop,select'))return;
   const ce=e.target.closest('[data-e]');
   if(ce){S.pe={id:ce.closest('.row').dataset.id,k:ce.dataset.e};return render()}
   if(S.pe){S.pe=null;render();if(!e.target.isConnected)return}
@@ -422,10 +431,9 @@ app.addEventListener('click',e=>{
   if(b.dataset.tab)return go({tab:b.dataset.tab});
   if(b.dataset.st){const o=cur(),n=+b.dataset.st;if(n===o.st)return;log(o,'Этап: '+ST[n]);o.st=n;render();scrollFeed();return say('Сохранено')}
   const a=b.dataset.a;
-  if(a==='edit'){S.ed=!S.ed;S.pe=null;return render()}
   if(a==='theme'){const d=document.documentElement;d.dataset.theme=d.dataset.theme==='d'?'':'d';render()}
   else if(a==='search'){S.search=!S.search;render();document.getElementById('q2')?.focus()}
-  else if(a==='v-list')go({s:'list'});else if(a==='v-stages')go({s:'stages',ed:false,pe:null});
+  else if(a==='v-list')go({s:'list'});else if(a==='v-stages')go({s:'stages',pe:null});
   else if(a==='new'){const n=OBJ.length+1,id='NF-'+String(n).padStart(3,'0');OBJ.unshift({...mk(id,'Новый объект',0,PEOPLE[0],'',0,0,0,'','','',''),feed:[],cli:[]});go({s:'card',id,tab:'obj'})}
   else if(a==='cli-add')go({addCli:true});else if(a==='cli-x')go({addCli:false});
   else if(a==='retry'){S.err=false;render();say('Сохранено')}
@@ -436,10 +444,10 @@ app.addEventListener('input',e=>{
 });
 app.addEventListener('change',e=>{
   const pk=e.target.dataset.pk;
-  if(pk){const o=OBJ.find(x=>x.id===S.pe.id),v=e.target.value;
+  if(pk){const o=OBJ.find(x=>x.id===(e.target.dataset.id||S.pe.id)),v=e.target.value;
     o[pk]=pk==='st'?+v:['eq','mo','paid'].includes(pk)?num(v):v;
     log(o,LB[pk]+': '+(pk==='st'?ST[o.st]:['eq','mo','paid'].includes(pk)?rub(o[pk]):pk==='due'?fd(v):v||'—'));
-    say('Сохранено');if(S.pe.k!=='to'){S.pe=null;render()}else e.target.value=o[pk].toLocaleString('ru-RU',{maximumFractionDigits:0});return}
+    say('Сохранено');if(!S.pe||S.pe.k!=='to'){S.pe=null;render()}else e.target.value=o[pk].toLocaleString('ru-RU',{maximumFractionDigits:0});return}
   const k=e.target.dataset.k;if(!k)return;const o=cur();
   o[k]=['eq','mo','paid'].includes(k)?num(e.target.value):e.target.value;
   if(['eq','mo','paid'].includes(k))e.target.value=o[k].toLocaleString('ru-RU',{maximumFractionDigits:0});
@@ -450,7 +458,7 @@ app.addEventListener('change',e=>{
 });
 app.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&S.pe){S.pe=null;return render()}
-  if(e.key==='Enter'&&e.target.dataset.e){e.preventDefault();return e.target.click()}
+  if(e.key==='Enter'&&e.target.dataset.open){e.preventDefault();return e.target.click()}
   if(e.key==='Enter'&&e.target.dataset.pk){e.preventDefault();e.target.blur()}
 });
 app.addEventListener('submit',e=>{
