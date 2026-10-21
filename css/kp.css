@@ -2414,3 +2414,10 @@ input.f{text-align:left}
 @media (max-width:760px){#trackView .trkc{flex-basis:78vw}}
 #trackView .trkc.empty{flex-basis:150px}
 @media (max-width:760px){#trackView .trkc.empty{flex-basis:40vw}}
+#trackView .dl .tabs{margin:0 0 12px}
+#trackView .dl .tab .n{font-size:var(--f12);opacity:.75}
+#trackView .trkf,#trackView .trke,#trackView .trkcl{padding:14px 15px;margin-bottom:10px}
+#trackView .trkf textarea{width:100%;resize:vertical}
+#trackView .trke{font-size:var(--f14);line-height:1.45;white-space:pre-wrap}
+#trackView .trke .s{font-size:var(--f12);color:var(--mut);margin-bottom:4px;white-space:normal}
+#trackView .trkcl .bar{gap:6px;flex-wrap:wrap}
