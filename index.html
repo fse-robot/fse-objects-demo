@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="demo-mock.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F8FA">
+<!-- CSP. Весь JS страницы вынесен в отдельные файлы, поэтому script-src
+     закручен до 'self': ни инлайн, ни внешний домен выполниться не может.
+     style-src сохраняет 'unsafe-inline' — разметка насквозь на style="…".
+     connect-src 'self': даже при удачном XSS украденную сессию некуда отправить.
+     Шрифты и иконки лежат на своём сервере — внешних источников нет вовсе (И8, И9в). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; img-src 'self' data: blob: https://cdn.etm.ru https://luis.ru; frame-ancestors 'self'; base-uri 'none'; form-action 'none'">
+<title>FSE · app.gasbase.ru</title>
+<!-- И9в · шрифты со своего сервера, не с Google Fonts. Список закрытый (И9а),
+     шрифты Яндекса исключены (И9б). Файл кладёт server-10-fonts.sh. -->
+<link rel="stylesheet" href="fonts/fonts.css">
+<!-- Библиотеки лежат локально в vendor/. integrity больше не нужен:
+     файл не приходит с чужого домена, подменить его в пути неоткуда. -->
+<script src="vendor/sortable-1.15.2.min.js"></script>
+<script src="vendor/xlsx-js-style-1.2.0.bundle.js"></script>
+<link rel="stylesheet" href="css/kp.css?v=7af45cfb">
+</head>
+<body>
+
+<!-- ══ И8 · весь набор иконок внутри страницы: приложение обязано
+        открываться без интернета. И6 · контурные, без эмодзи. ══ -->
+<svg style="display:none" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M5 12H3l9-9 9 9h-2M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3v4a1 1 0 001 1h4M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></symbol>
+<symbol id="i-calc" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M16 12h.01M8 16h2M12 16h2M16 16h.01"/></symbol>
+<symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 4h2l2.5 11h11L21 7H6"/></symbol>
+<symbol id="i-tool" viewBox="0 0 24 24"><path d="M7 10h3V7l-2-2a5 5 0 016 6l7 7a2 2 0 01-3 3l-7-7a5 5 0 01-6-6l2 2z"/></symbol>
+<symbol id="i-cog" viewBox="0 0 24 24"><path d="M10.3 4.3a2 2 0 013.4 0l.4.7a2 2 0 002 1h.8a2 2 0 011.7 3l-.4.7a2 2 0 000 2l.4.7a2 2 0 01-1.7 3h-.8a2 2 0 00-2 1l-.4.7a2 2 0 01-3.4 0l-.4-.7a2 2 0 00-2-1h-.8a2 2 0 01-1.7-3l.4-.7a2 2 0 000-2l-.4-.7a2 2 0 011.7-3h.8a2 2 0 002-1z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zM4 7.5l8 4.5 8-4.5M12 12v9"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v9M9 10v9M15 10v9M19 10v9M3 21h18"/></symbol>
+<symbol id="i-rep" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M9 13l2 2 4-4M9 3v4M15 3v4"/></symbol>
+<symbol id="i-ok" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M10 5a2 2 0 114 0 7 7 0 014 6v3a4 4 0 002 3H4a4 4 0 002-3v-3a7 7 0 014-6M9 17v1a3 3 0 006 0v-1"/></symbol>
+<symbol id="i-fold" viewBox="0 0 24 24"><path d="M5 4h4l3 3h7a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></symbol>
+<symbol id="i-usr" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0114 0"/></symbol>
+<symbol id="i-usrs" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0M16 5.5a3 3 0 010 5.8M17 20a6 6 0 00-1.5-4"/></symbol>
+<symbol id="i-bld" viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 012-2h6a2 2 0 012 2v16M14 9h4a2 2 0 012 2v10M8 7h2M8 11h2M8 15h2M3 21h18"/></symbol>
+<symbol id="i-cyl" viewBox="0 0 24 24"><rect x="8" y="7" width="8" height="14" rx="3"/><path d="M10 7V5h4v2M11 3h2"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+<symbol id="i-rub" viewBox="0 0 24 24"><path d="M9 20V4h5a4 4 0 010 8H6m0 4h8"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 013.9-2c1.2.7 1.3 2.3.3 3.2-.7.6-1.7.9-1.7 2M12 17h.01"/></symbol>
+<symbol id="i-srch" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></symbol>
+<symbol id="i-dotsv" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/></symbol>
+<symbol id="i-filt" viewBox="0 0 24 24"><path d="M4 5h16l-6 7v6l-4 2v-8L4 5z"/></symbol>
+<symbol id="i-tbl" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14a8 8 0 01-10-10 8 8 0 1010 10z"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3l9-16zM12 10v4M12 17h.01"/></symbol>
+<symbol id="i-imp" viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 3v12M8 11l4 4 4-4"/></symbol>
+<symbol id="i-exp" viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 15V3M8 7l4-4 4 4"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.2"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 006 .5l2-2a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-6-.5l-2 2A4 4 0 0011.7 17l1-1"/></symbol>
+<symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h4"/></symbol>
+<symbol id="i-refr" viewBox="0 0 24 24"><path d="M20 11a8 8 0 10-2 6M20 5v6h-6"/></symbol>
+<symbol id="i-hist" viewBox="0 0 24 24"><path d="M4 11a8 8 0 112 6M4 5v6h6M12 8v4l3 2"/></symbol>
+<symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 12h3l2-6 4 12 3-9 2 3h4"/></symbol>
+<symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 3v6M15 3v6M6 9h12v3a6 6 0 01-12 0V9zM12 18v3"/></symbol>
+<symbol id="i-gauge" viewBox="0 0 24 24"><path d="M12 14l4-4"/><path d="M4 18a9 9 0 1116 0"/><circle cx="12" cy="18" r="1.3"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path d="M5 3h11l3 3v13a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/><path d="M8 3v6h7V3M8 21v-6h8v6"/></symbol>
+<symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4l10-10a2.5 2.5 0 00-3.5-3.5L4.5 16.5 4 20z"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c1 3.5 6 6 6 11a6 6 0 01-12 0c0-2.5 1.5-4 2.5-5 .5 2 1.5 3 2.5 3 0-3-1-6 1-9zM12 20a2.2 2.2 0 01-2.2-2.2c0-1.3 1.2-2.2 2.2-3.6 1 1.4 2.2 2.3 2.2 3.6A2.2 2.2 0 0112 20z"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3v4a1 1 0 001 1h4M7 3h7l5 5v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"/><path d="M9 13h6M9 17h4"/></symbol>
+<symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="14" r="4"/><path d="M11 11l9-9M17 5l2 2M15 7l2 2"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+<symbol id="i-merge" viewBox="0 0 24 24"><path d="M7 21V9a5 5 0 015-5 5 5 0 015 5v12M7 12h10"/></symbol>
+<symbol id="i-drag" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.3"/><circle cx="15" cy="6" r="1.3"/><circle cx="9" cy="12" r="1.3"/><circle cx="15" cy="12" r="1.3"/><circle cx="9" cy="18" r="1.3"/><circle cx="15" cy="18" r="1.3"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24"><path d="M15 17v2a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h7a2 2 0 012 2v2"/><path d="M10 12h11M18 9l3 3-3 3"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></symbol>
+<symbol id="i-sheet" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M3 14.5h18M9 9v11M15 9v11"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4h10l-1.5 3L15 10H5"/></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4l6 2 6-2v14l-6 2-6-2-6 2V6l6-2zM9 4v14M15 6v14"/></symbol>
+<symbol id="i-msg" viewBox="0 0 24 24"><path d="M5 5h14a2 2 0 012 2v8a2 2 0 01-2 2h-7l-5 4v-4H5a2 2 0 01-2-2V7a2 2 0 012-2z"/></symbol>
+</defs></svg>
+
+<div class="app">
+
+  <!-- ══ БОКОВОЕ МЕНЮ. На компьютере стоит всегда, на телефоне выезжает —
+          тот же элемент и тот же выключатель drawer() из кода. ══ -->
+  <aside class="side drawer" id="drawer">
+    <!-- И23 · логотип из кода приложения: пять красных прямоугольников и FSE -->
+    <div class="brand" data-act="home" title="На главную"><svg viewBox="0 0 46 40"><rect x="0" y="0" width="12" height="16"/><rect x="17" y="0" width="12" height="16"/><rect x="0" y="20" width="12" height="20"/><rect x="17" y="20" width="12" height="20"/><rect x="34" y="20" width="12" height="20"/></svg>FSE</div>
+
+    <!-- И24 · названия разделов совпадают с теми, что в коде.
+         И25 · активны только существующие разделы. -->
+    <div class="dh">Работа</div>
+    <div class="nav" data-go="crm" title="CRM"><span class="ic"><svg class="i"><use href="#i-list"/></svg></span><span class="t">CRM</span></div>
+    <div class="nav act" data-go="specs" title="Сметы"><span class="ic"><svg class="i"><use href="#i-doc"/></svg></span><span class="t">Сметы</span></div>
+    <div class="nav" data-go="deal" title="Расчёт сделки"><span class="ic"><svg class="i"><use href="#i-calc"/></svg></span><span class="t">Расчёт сделки</span></div>
+    <div class="nav" data-go="zakupki" title="Закупки"><span class="ic"><svg class="i"><use href="#i-cart"/></svg></span><span class="t">Закупки</span></div>
+    <div class="nav" data-go="shift" title="Смена"><span class="ic"><svg class="i"><use href="#i-pin"/></svg></span><span class="t">Смена</span></div>
+    <div class="nav" data-go="to" title="Обслуживание"><span class="ic"><svg class="i"><use href="#i-cog"/></svg></span><span class="t">Обслуживание</span></div>
+    <div class="nav" data-go="finance" title="Финансы"><span class="ic"><svg class="i"><use href="#i-rub"/></svg></span><span class="t">Финансы</span></div>
+    <div class="nav" data-go="recert" title="Переосвидетельствование"><span class="ic"><svg class="i"><use href="#i-cyl"/></svg></span><span class="t">Переосвидетельствование</span></div>
+    <div class="nav" data-go="home" title="Обзор"><span class="ic"><svg class="i"><use href="#i-home"/></svg></span><span class="t">Обзор</span></div>
+    <div class="nav" data-go="partner" title="Ваш объект"><span class="ic"><svg class="i"><use href="#i-bld"/></svg></span><span class="t">Ваш объект</span></div>
+    <div class="nav" data-go="track" title="Объекты"><span class="ic"><svg class="i"><use href="#i-bld"/></svg></span><span class="t">Объекты</span></div>
+
+    <div class="dh">Данные</div>
+    <div class="nav" data-go="entities" title="Юрлица"><span class="ic"><svg class="i"><use href="#i-bank"/></svg></span><span class="t">Юрлица</span></div>
+    <div class="nav" data-go="settings" title="Настройки"><span class="ic"><svg class="i"><use href="#i-cog"/></svg></span><span class="t">Настройки</span></div>
+    <div class="nav" data-go="audit" title="Журнал доступа"><span class="ic"><svg class="i"><use href="#i-shield"/></svg></span><span class="t">Журнал доступа</span></div>
+
+    <!-- Свёрнуто в одну строку: девять пунктов занимали половину высоты меню
+         и заставляли его прокручиваться (И25). -->
+    <div class="dh gtog" id="soonT"><span>Появится позже</span><span class="cn">8</span><svg class="i chv"><use href="#i-down"/></svg></div>
+    <div id="soonL" class="soon">
+      <div class="nav off"><span class="ic"><svg class="i"><use href="#i-fold"/></svg></span><span class="t">Проекты</span><span class="sn">скоро</span></div>
+      <div class="nav off"><span class="ic"><svg class="i"><use href="#i-cal"/></svg></span><span class="t">Календарь</span><span class="sn">скоро</span></div>
+      <div class="nav off"><span class="ic"><svg class="i"><use href="#i-bell"/></svg></span><span class="t">Уведомления</span><span class="sn">скоро</span></div>
+      <div class="nav off"><span class="ic"><svg class="i"><use href="#i-usr"/></svg></span><span class="t">Клиенты</span><span class="sn">скоро</span></div>
+      <div class="nav off"><span class="ic"><svg class="i"><use href="#i-bld"/></svg></span><span class="t">Объекты</span><span class="sn">скоро</span></div>
+      <div class="nav off"><span class="ic"><svg class="i"><use href="#i-cyl"/></svg></span><span class="t">Оборудование</span><span class="sn">скоро</span></div>
+      <div class="nav off"><span class="ic"><svg class="i"><use href="#i-usrs"/></svg></span><span class="t">Подрядчики</span><span class="sn">скоро</span></div>
+      <div class="nav off"><span class="ic"><svg class="i"><use href="#i-wave"/></svg></span><span class="t">Мониторинг систем</span><span class="sn">скоро</span></div>
+    </div>
+
+    <div class="end">
+      <div class="sdiv"></div>
+      <div class="nav" data-act="menuclose" title="Свернуть меню"><span class="ic"><svg class="i"><use href="#i-left"/></svg></span><span class="t">Свернуть меню</span></div>
+      <div class="nav" data-go="help" title="Помощь и обратная связь"><span class="ic"><svg class="i"><use href="#i-help"/></svg></span><span class="t">Помощь</span></div>
+    </div>
+  </aside>
+  <div class="ov" id="ov" data-act="menu"></div>
+
+  <div class="wrap">
+    <!-- ══ ШАПКА ══ -->
+    <header class="top">
+      <button class="burger" data-act="menu" title="Меню" aria-label="Меню"><svg class="i"><use href="#i-menu"/></svg></button>
+      <span class="logo" data-act="home" title="На главную"><svg viewBox="0 0 46 40"><rect x="0" y="0" width="12" height="16"/><rect x="17" y="0" width="12" height="16"/><rect x="0" y="20" width="12" height="20"/><rect x="17" y="20" width="12" height="20"/><rect x="34" y="20" width="12" height="20"/></svg><b>FSE</b></span>
+      <!-- И0 · кнопки «Найти» рядом с полем нет: поиск работает по вводу -->
+      <div class="sr" id="topSearch"><span class="m"><svg class="i"><use href="#i-srch"/></svg></span>
+        <input type="text" id="globalq" placeholder="Поиск по сметам и объектам" autocomplete="off"></div>
+      <button class="ib srb" id="srb" title="Поиск" aria-label="Поиск"><svg class="i"><use href="#i-srch"/></svg></button>
+      <span class="obj" id="objname"></span>
+      <div style="flex:1;min-width:0"></div>
+      <span class="src" id="srcbadge"><span class="dt" id="srcdot"></span><span id="srctext">демо</span></span>
+      <button class="ib" id="tT" title="Тема: день или вечер" aria-label="Тема"><svg class="i"><use href="#i-moon"/></svg></button>
+      <button class="ib" id="tB" title="Крупный кегль" aria-label="Крупный кегль" style="font-weight:700;font-size:13px">A⁺</button>
+      <select class="fnt" id="fnt" title="Шрифт" aria-label="Шрифт">
+        <option value="inter">Inter</option>
+        <option value="golos">Golos Text</option>
+        <option value="onest">Onest</option>
+        <option value="manrope">Manrope</option>
+        <option value="roboto">Roboto</option>
+        <option value="sys">Системный</option>
+      </select>
+      <!-- Оповещения: колокольчик рядом с аватаркой. Виден на любой ширине —
+           на телефоне шапка липкая, и прокручивать до него не приходится. -->
+      <div class="bell" id="bellBox">
+        <button class="ib" id="bellBtn" title="Оповещения" aria-label="Оповещения" aria-expanded="false"><svg class="i"><use href="#i-bell"/></svg><span class="bn" id="bellN" style="display:none">0</span></button>
+        <div class="bellmenu" id="bellList" style="display:none"></div>
+      </div>
+      <!-- Роль показывается один раз — здесь, под фамилией. В боковом меню
+           она стояла второй строкой и повторяла то же самое. Переключатель
+           ролей остаётся общедоступным для администратора: не-администратору
+           код удаляет его из разметки целиком (kp-01.js, applyRoleNav). -->
+      <div class="usr" data-act="rolemenu" title="Учётная запись и роль">
+        <div class="av" id="avatar">—</div>
+        <div class="nm"><div class="n1" id="userName">Вход не выполнен</div>
+          <div class="n2" id="roleName">—</div></div>
+        <svg class="i chv" style="color:var(--dim)"><use href="#i-down"/></svg>
+        <div id="roleList" class="rolemenu" style="display:none">
+          <div class="nav" data-act="identity" title="Способы входа в эту учётную запись"><span class="ic"><svg class="i"><use href="#i-key"/></svg></span><span class="t">Вход в систему</span><span class="ch warn" id="mailWarn" style="display:none">почта не привязана</span></div>
+          <div class="nav" data-act="logout" title="Выйти из учётной записи"><span class="ic"><svg class="i"><use href="#i-out"/></svg></span><span class="t">Выйти</span></div>
+          <div class="sdiv"></div>
+          <div class="nav rolepick" data-role="director" data-rn="Директор"><span class="ic"><svg class="i"><use href="#i-shield"/></svg></span><span class="t">Директор</span></div>
+          <div class="nav rolepick" data-role="office" data-rn="Менеджер"><span class="ic"><svg class="i"><use href="#i-usrs"/></svg></span><span class="t">Менеджер</span></div>
+          <div class="nav rolepick" data-role="office_admin" data-rn="Администратор офиса"><span class="ic"><svg class="i"><use href="#i-usr"/></svg></span><span class="t">Администратор офиса</span></div>
+          <div class="nav rolepick dimmed" data-role="snab" data-rn="Снабжение"><span class="ic"><svg class="i"><use href="#i-box"/></svg></span><span class="t">Снабжение</span></div>
+          <div class="nav rolepick" data-role="montazhnik" data-rn="Исполнитель"><span class="ic"><svg class="i"><use href="#i-tool"/></svg></span><span class="t">Исполнитель</span></div>
+          <div class="nav rolepick" data-role="to_engineer" data-rn="Инженер ТО"><span class="ic"><svg class="i"><use href="#i-gauge"/></svg></span><span class="t">Инженер ТО</span></div>
+          <div class="nav rolepick dimmed" data-role="partner" data-rn="Партнёр"><span class="ic"><svg class="i"><use href="#i-usrs"/></svg></span><span class="t">Партнёр</span></div>
+          <div class="nav rolepick dimmed" data-role="customer" data-rn="Заказчик"><span class="ic"><svg class="i"><use href="#i-bank"/></svg></span><span class="t">Заказчик</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- ══ СМЕТЫ: СПИСОК ══ -->
+      <div id="specsView">
+        <div class="ph"><div><h1>Сметы</h1><p id="specsSub">Монтаж и поставка: спецификации и себестоимость</p></div>
+          <div class="acts">
+            <button class="btn primary" data-act="newspec" title="Новая смета"><svg class="i"><use href="#i-plus"/></svg><span class="lbl">Новая смета</span></button>
+          </div></div>
+        <div class="stickhead">
+          <div class="specsearch"><span class="m" style="position:absolute;left:11px;top:10px;color:var(--dim);pointer-events:none"><svg class="i"><use href="#i-srch"/></svg></span>
+            <input id="specq" placeholder="Поиск сметы или проекта — по названию или номеру" autocomplete="off"></div>
+          <div class="selbar" id="specselbar"></div>
+          <div id="specErr"></div>
+        </div>
+        <div id="specList"></div>
+      </div>
+
+      <!-- ══ СМЕТЫ: РЕДАКТОР ══ -->
+      <div id="editorView" style="display:none">
+        <div class="head">
+          <div class="bar" style="margin:0 0 10px">
+            <button class="btn sm io dark" data-act="back" title="К списку смет"><svg class="i"><use href="#i-left"/></svg><span class="lbl">К списку</span></button>
+            <button class="btn sm io" data-act="dupspec" title="Дублировать смету"><svg class="i"><use href="#i-copy"/></svg><span class="lbl">Дублировать</span></button>
+            <button class="btn sm io" data-act="sharespec" title="Общий доступ"><svg class="i"><use href="#i-link"/></svg><span class="lbl">Общий доступ</span></button>
+            <button class="btn sm" data-act="import" title="Импорт: фото, Excel или PDF"><svg class="i"><use href="#i-imp"/></svg><span class="lbl">Импорт: фото, Excel или PDF</span></button>
+            <button class="btn sm" data-act="export-shops" title="Выгрузка по магазинам"><svg class="i"><use href="#i-cart"/></svg><span class="lbl">По магазинам</span></button>
+            <button class="btn sm" data-act="mprices" title="Цены монтажа"><svg class="i"><use href="#i-tool"/></svg><span class="lbl">Цены монтажа</span></button>
+            <button class="btn sm" data-act="weld" title="Сварка труб"><svg class="i"><use href="#i-flame"/></svg><span class="lbl">Сварка труб</span></button>
+            <button class="btn sm" data-act="history" title="История правок"><svg class="i"><use href="#i-hist"/></svg><span class="lbl">История правок</span></button>
+            <button class="btn sm" data-act="addsection" title="Добавить подраздел"><svg class="i"><use href="#i-plus"/></svg><span class="lbl">Подраздел</span></button>
+            <button class="btn sm" data-act="export-cost" title="Excel (себес)" style="display:none"><svg class="i"><use href="#i-sheet"/></svg><span class="lbl">Excel (себес)</span></button>
+            <button class="btn sm" data-act="export-client" title="Excel заказчику" style="display:none"><svg class="i"><use href="#i-sheet"/></svg><span class="lbl">Excel заказчику</span></button>
+            <button class="btn sm primary" data-act="kp-gdoc" title="КП в Google-документ" style="display:none"><svg class="i"><use href="#i-file"/></svg><span class="lbl">КП в Google</span></button>
+            <button class="btn sm" data-act="kp-letter" title="Исходящее письмо заказчику" style="display:none"><svg class="i"><use href="#i-edit"/></svg><span class="lbl">Исх.письмо</span></button>
+            <button class="btn sm danger solid delspec" data-act="delspec" title="Удалить смету"><svg class="i"><use href="#i-trash"/></svg><span class="lbl">Удалить смету</span></button>
+          </div>
+          <div class="title" id="etitle"></div><div class="meta" id="emeta"></div>
+          <!-- Строка «только просмотр». Заметная, но не тревожная: человек ничего
+               не сломал, ему просто не выдано право правки. -->
+          <div class="ronote" id="roNote" style="display:none"></div>
+          <!-- Отказ импорта. Не в toast: тот называется «уведомление о сохранении»,
+               гаснет за две секунды и не берёт нажатие, а объяснение на три строки
+               за это время не прочитать (#95). -->
+          <div class="errbox x" id="impErr" style="display:none">
+            <p id="impErrText"></p>
+            <button type="button" id="impErrX" title="Скрыть сообщение" aria-label="Скрыть сообщение"><svg class="i"><use href="#i-x"/></svg></button>
+          </div>
+          <!-- Вкладки сметы и вход в подбор. Рисует updTabs(); на телефоне
+               их переключает и смахивание по списку позиций. -->
+          <div class="tabbar" id="tabbar" style="display:none"></div>
+        </div>
+        <!-- Шапка конъюнктурного анализа. Стоит над липкой группой и вне её:
+             это поля документа, а не таблицы, их заполняют один раз.
+             Рисует KA.renderHead() в kp-16.js, на других вкладках пуста. -->
+        <div id="kaheadbox"></div>
+        <!-- Полоса, выделение и шапка таблицы держатся на экране при прокрутке
+             одним контейнером (#306). Порознь каждой пришлось бы считать
+             смещение, а оно непостоянно: выделение появляется и исчезает,
+             заметка о скорости каталога — тоже. Контейнер стоит рядом с карточкой,
+             а не внутри неё: sticky у потомка ограничен рамкой родителя. -->
+        <div class="stickhead">
+          <!-- В липкой полосе — только поиск: действия и вкладки стоят
+               в карточке сметы, и на прокрутку уходит одна строка. -->
+          <div class="bar headbar">
+            <div class="search"><input id="q" placeholder="Поиск позиции по названию или коду" autocomplete="off"><div class="drop" id="drop"></div></div>
+            <span id="speednote" class="hint" style="margin-left:auto;align-self:center;color:var(--grn);font-weight:600"></span>
+          </div>
+          <div class="selbar" id="selbar"></div>
+          <div class="thead"><span></span><span><input type="checkbox" id="selall" title="Выделить все позиции" aria-label="Выделить все позиции"></span><span>№</span><span>Наименование / артикул</span>
+            <span>Ед.</span><span class="num">Кол-во</span><span class="num" id="thPrice">Цена об.</span><span class="num" id="thSum">Сумма</span><span class="num" id="thMonP">Цена монт.</span><span class="num" id="thMon">Монтаж</span><span class="num" id="thTot">Всего</span><span></span></div>
+        </div>
+        <!-- Подбор из каталога (#348). Блок в потоке, а не выпадающий список:
+             смета остаётся на экране, видно, куда кладёшь позицию. Панель
+             рисует catRender() в kp-01b.js, пустой она не показывается. -->
+        <div class="catpanel" id="catpanel" style="display:none"></div>
+        <div id="list"></div>
+        <div class="foot" id="foot"></div>
+        <div class="footm" id="footm"></div>
+        <div id="calcpanel"></div>
+      </div>
+
+      <!-- Обзор. Содержимое рисует renderHome(); контейнер отдельный,
+           чтобы заменить вёрстку целиком, не трогая остальные разделы. -->
+      <div id="homeView" style="display:none"></div>
+    </main>
+  </div>
+</div>
+
+<input type="file" id="fileinput" accept=".xlsx,.xls,.csv,.pdf,image/*" style="display:none">
+<!-- КП поставщика для конъюнктурного анализа. Свой вход, а не общий
+     с импортом спецификации: файл разбирается другой ручкой, и позиции
+     ложатся предложениями к строкам, а не новыми строками сметы. -->
+<input type="file" id="kafile" accept=".xlsx,.xls,.csv,.pdf,image/*" style="display:none">
+<div class="toast" id="toast"></div>
+<!-- Нижнее меню телефона: ряд и «+» строит kp-09.js из разрешённых пунктов бокового меню.
+     Стоит после экранов: поиск по data-act находит сначала кнопку экрана. -->
+<nav class="tabnav" id="tabnav" aria-label="Главные разделы"></nav>
+<div class="tnm" id="tnm"></div>
+<div class="load" id="load"><div class="sp"></div><div class="lt" id="loadtxt">Загрузка…</div></div>
+
+<script src="js/kp-01.js?v=69c8b4c9"></script>
+<script src="js/kp-01b.js?v=c361e630"></script>
+<script src="js/kp-02.js?v=a6a5ee5c"></script>
+<script src="js/kp-03.js?v=6f53ed6c"></script>
+<script src="js/kp-03b.js?v=6ccb7f5e"></script>
+<script src="js/kp-04.js?v=64694e40"></script>
+<script src="js/kp-05.js?v=cf358357"></script>
+<script src="js/kp-06.js?v=ff186994"></script>
+<script src="js/kp-07.js?v=b18ce6fb"></script>
+<script src="js/kp-08.js?v=48ab1025"></script>
+<script src="js/kp-08b.js?v=3f08bcf4"></script>
+<script src="js/kp-20.js?v=355f5736"></script>
+<script src="js/kp-09.js?v=c212a702"></script>
+<script src="js/kp-10.js?v=e121b304"></script>
+<script src="js/kp-11.js?v=a67fbb1f"></script>
+<script src="js/kp-11b.js?v=ade70eec"></script>
+<script src="js/kp-12.js?v=47f8f391"></script>
+<script src="js/kp-13.js?v=d718e69e"></script>
+<script src="js/kp-14.js?v=666e3732"></script>
+<script src="js/kp-15.js?v=7b7a0420"></script>
+<script src="js/kp-16.js?v=fc25f1dc"></script>
+<script src="js/kp-17.js?v=1c635091"></script>
+<script src="js/kp-19.js?v=7eb516e4"></script>
+<script src="js/kp-21.js?v=d523693f"></script>
+<script src="js/kp-22.js?v=d8a598b7"></script>
+<script src="js/kp-23.js?v=fb6b7f8f"></script>
+<script src="js/kp-18.js?v=34351ad3"></script>
+</body>
+</html>
