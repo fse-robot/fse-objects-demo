@@ -1,0 +1,2416 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   FSE · app.gasbase.ru — дизайн-система, редакция 13 августа 2026.
+   Один файл на всё приложение. Правила помечены номерами из части 4
+   документа «ДИЗАЙН-СИСТЕМА.md»: И0…И26.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Часть 3. Палитра. Каждый цвет работает в обеих темах (И22). ────────── */
+:root{
+  --page:#ECEFF4; --card:#FFFFFF; --side:#FFFFFF; --soft:#F4F5F7; --hover:#F0F2F5;
+  --ink:#191C20;  --ink2:#3D444D; --mut:#7A828C;  --dim:#9BA2AC; --off:#C3C8CE;
+  --line:#EBEDF0; --line2:#DFE2E7;
+  --red:#E5322A;  --redd:#C9271F; --redbg:#FDECEB; --redln:#F6C9C4;
+  --grn:#22A06B;  --grnbg:#E6F5EE;
+  --amb:#D98A0B;  --ambbg:#FCF2DE;
+  --blu:#3B82D6;  --blubg:#E8F1FB;
+  --msgown:var(--blubg);
+  --vio:#7B6EE0;  --viobg:#EEECFC;
+  --pnk:#D4537E;  --pnkbg:#FBEAF0;
+  /* «Сюда ещё не вводили». Намеренно почти незаметный: это подсказка,
+     а не ошибка. Формой из двенадцати полей в насыщенном жёлтом экран
+     выглядел бы как сплошная авария. */
+  --todo:#FFFCF2; --todoln:#E6DBBB;
+  /* Карточка отделена от фона тенью, без рамки: рамка вместе с тенью рисует двойной контур. */
+  --sh1:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.08);
+  --sh2:0 10px 30px rgba(16,24,40,.11);
+  --sh3:0 24px 60px rgba(10,15,25,.24);
+  --ovl:rgba(15,20,30,.45);
+  /* Три основных цвета: красный — действие и текущий раздел, графит — меню и
+     нажатая кнопка, синий — сведения и ссылки. Графит тёмного меню (--nv*)
+     держится в обеих темах: в тёмной он темнее страницы, а не светлее. */
+  --nv:#1D232B; --nvink:#E6E9ED; --nvmut:#A3ABB5; --nvoff:#68717C; --nvhov:#2A313A; --nvln:#2C333C;
+  --sel:#1D232B; --selink:#FFFFFF;
+  /* Скругление: карточка, элемент управления, пилюля */
+  --rc:14px; --rb:10px; --rp:999px;
+  /* Кегль. Базовый не меняется, крупный — только по кнопке A⁺ (И10). */
+  --f11:11px; --f12:12px; --f13:13px; --f14:14px; --f15:15px; --f28:28px;
+  /* Имена из прежнего кода — чтобы ни одна старая строка не осталась без цвета */
+  --bg:#ECEFF4; --surface:#F4F5F7;
+  --ok:#22A06B; --okbg:#E6F5EE; --warn:#D98A0B; --warnbg:#FCF2DE;
+}
+html[data-t="d"]{
+  --page:#0E1013; --card:#16191D; --side:#141719; --soft:#1C2025; --hover:#22262C;
+  --ink:#E9EBEE;  --ink2:#C3C8CF; --mut:#8B939D;  --dim:#6C737C; --off:#4A5058;
+  --line:#23272D; --line2:#2E333A;
+  --red:#F04438;  --redd:#E5322A; --redbg:#2E1A19; --redln:#5A2A26;
+  --grn:#3ECF8E;  --grnbg:#14271F;
+  --amb:#E0A21B;  --ambbg:#2B2313;
+  --blu:#5B9BE8;  --blubg:#152232;
+  --msgown:var(--blubg);
+  --vio:#9B90F0;  --viobg:#1E1B33;
+  --pnk:#E27AA0;  --pnkbg:#2D1922;
+  --todo:#1C1913; --todoln:#3A3222;
+  --sh1:0 1px 2px rgba(0,0,0,.5),0 6px 20px rgba(0,0,0,.42);
+  --sh2:0 10px 30px rgba(0,0,0,.5);
+  --sh3:0 24px 60px rgba(0,0,0,.6);
+  --ovl:rgba(0,0,0,.62);
+  --nv:#0A0C0F; --nvink:#E9EBEE; --nvmut:#959DA7; --nvoff:#5A616B; --nvhov:#1B1F25; --nvln:#1F2329;
+  --sel:#E9EBEE; --selink:#16191D;
+  --bg:#0E1013; --surface:#1C2025;
+  --ok:#3ECF8E; --okbg:#14271F; --warn:#E0A21B; --warnbg:#2B2313;
+}
+html[data-b="1"]{--f11:12px;--f12:13px;--f13:15px;--f14:16px;--f15:17px;--f28:32px}
+
+/* ── Основание ─────────────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--page)}
+body{color:var(--ink);font-size:var(--f13);line-height:1.45;
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-feature-settings:"cv05" 1,"cv08" 1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+/* И11 · табличные цифры, И12 · крупное число не переносится */
+.n{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;white-space:nowrap}
+td .n,td.n{font-size:clamp(11px,calc(var(--f13) - 0.4vw),var(--f13))}
+
+/* И6 · иконка контурная 17×17, толщина 1.7. И7 · min-width, иначе схлопнется */
+svg.i{width:17px;height:17px;min-width:17px;min-height:17px;stroke:currentColor;fill:none;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+svg.i.sm{width:14px;height:14px;min-width:14px;min-height:14px}
+
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:20px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ══ ОБОЛОЧКА ═══════════════════════════════════════════════════════════ */
+.app{display:flex;min-height:100vh}
+
+/* Боковое меню. На компьютере стоит слева всегда, на телефоне выезжает
+   поверх — тот же элемент, тот же выключатель drawer() из кода. */
+.side{width:214px;flex:0 0 214px;background:var(--side);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;
+  scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain;z-index:46}
+.side::-webkit-scrollbar{width:0;height:0;display:none}
+.brand{display:flex;align-items:center;gap:8px;padding:17px 16px 15px;font-size:19px;
+  font-weight:700;letter-spacing:-.3px;color:var(--ink);cursor:pointer}
+.brand svg{width:25px;height:22px;stroke:none;flex:0 0 auto}
+.brand svg rect{fill:var(--red)}
+.dh{font-size:var(--f11);letter-spacing:.7px;text-transform:uppercase;color:var(--dim);
+  padding:15px 16px 5px;font-weight:600}
+.nav{display:flex;align-items:center;gap:10px;margin:1px 8px;padding:8px 9px;border-radius:8px;
+  color:var(--ink2);cursor:pointer;font-size:var(--f13);white-space:nowrap;font-weight:500}
+.nav:hover{background:var(--hover)}
+.nav.act{background:var(--redbg);color:var(--red);font-weight:600}
+.nav .ic{width:17px;height:17px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.nav .t{overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}
+.nav .b{margin-left:auto;font-size:var(--f11);background:var(--line);color:var(--mut);
+  border-radius:20px;padding:1px 6px;font-weight:600;min-width:18px;text-align:center;flex:0 0 auto}
+.nav.act .b{background:var(--red);color:#fff}
+.nav .sn{margin-left:auto;flex:0 0 auto;font-size:9px;letter-spacing:.4px;text-transform:uppercase;
+  color:var(--off);font-weight:600}
+/* И25 · несуществующие разделы приглушены и не нажимаются */
+.nav.off,.nav.dimmed{color:var(--off);cursor:default;font-weight:400;pointer-events:none}
+.nav.off:hover,.nav.dimmed:hover{background:none}
+.nav.off svg,.nav.dimmed svg{opacity:.55}
+.sdiv{height:1px;background:var(--line);margin:10px 16px}
+.side .end{margin-top:auto;padding-bottom:10px}
+.rolepick{padding-left:32px!important}
+#roleName{color:var(--red);font-weight:600}
+/* Группа «Появится позже» свёрнута: девять пунктов заставляли меню прокручиваться (И25) */
+.dh.gtog{display:flex;align-items:center;gap:7px;cursor:pointer;padding-right:12px}
+.dh.gtog:hover{color:var(--mut)}
+.dh.gtog .cn{background:var(--line);color:var(--dim);border-radius:20px;padding:0 6px;
+  font-size:10px;letter-spacing:0;font-weight:700}
+.dh.gtog .chv{width:14px;height:14px;min-width:14px;min-height:14px;margin-left:auto;
+  transition:transform .18s;color:var(--dim)}
+.dh.gtog.op .chv{transform:rotate(180deg)}
+.soon{display:none}.soon.op{display:block}
+/* Тёмное меню отделяет навигацию от работы: на мониторе глаз находит
+   разделы, не читая подписи. Текущий раздел — красной плашкой. */
+.side{background:var(--nv);border-right-color:var(--nvln)}
+.side .brand{color:var(--nvink)}
+.side .dh{color:var(--nvoff)}
+.side .dh.gtog:hover{color:var(--nvmut)}
+.side .dh.gtog .cn{background:var(--nvhov);color:var(--nvmut)}
+.side .dh.gtog .chv{color:var(--nvoff)}
+.side .nav{color:var(--nvmut);border-radius:var(--rb)}
+.side .nav:hover{background:var(--nvhov);color:var(--nvink)}
+.side .nav.act{background:var(--red);color:#fff}
+.side .nav.off,.side .nav .sn{color:var(--nvoff)}
+.side .nav .b{background:var(--nvhov);color:var(--nvink)}
+.side .sdiv{background:var(--nvln)}
+.ov{position:fixed;inset:0;background:var(--ovl);z-index:45;display:none}
+.ov.on{display:block}
+
+/* Шапка. Высота 56 — на неё завязаны липкие полосы разделов. */
+.wrap{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{background:var(--card);border-bottom:1px solid var(--line);height:56px;flex:0 0 56px;
+  padding:0 14px;display:flex;align-items:center;gap:9px;position:sticky;top:0;z-index:30}
+.burger{display:none}
+.logo{display:none}
+.top .obj{font-size:var(--f12);color:var(--mut);max-width:34%;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}
+.sr{flex:1;max-width:460px;position:relative;min-width:0}
+.sr input{width:100%;height:38px;border:1px solid var(--line2);border-radius:9px;background:var(--soft);
+  color:var(--ink);font-size:var(--f13);font-family:inherit;padding:0 12px 0 36px}
+.sr input::placeholder{color:var(--dim)}
+.sr input:focus{outline:none;background:var(--card);border-color:var(--mut)}
+.sr .m{position:absolute;left:11px;top:10px;color:var(--dim);pointer-events:none}
+.ib{width:36px;height:36px;border-radius:var(--rb);border:none;background:none;color:var(--mut);
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
+  font-family:inherit;flex:0 0 auto}
+.ib:hover{background:var(--hover);color:var(--ink)}
+.ib:active{box-shadow:inset 0 2px 4px rgba(0,0,0,.16);transform:translateY(1px)}
+.fnt{height:34px;min-width:auto;width:126px;font-size:var(--f12);padding:0 8px;flex:0 0 auto;
+  border:1px solid var(--line2);border-radius:var(--rb);background:var(--card);color:var(--ink);font-family:inherit}
+.usr{display:flex;align-items:center;gap:9px;padding-left:10px;border-left:1px solid var(--line);
+  cursor:pointer;flex:0 0 auto}
+.av{width:34px;height:34px;border-radius:50%;background:var(--blubg);color:var(--blu);display:flex;
+  align-items:center;justify-content:center;font-weight:700;font-size:var(--f12);flex:0 0 auto}
+.usr{position:relative}
+.usr .nm{line-height:1.25}
+.usr .nm .n1{font-size:var(--f13);font-weight:600;white-space:nowrap}
+.usr .nm .n2{font-size:var(--f11);color:var(--mut);white-space:nowrap}
+.src{font-size:var(--f11);color:var(--mut);display:flex;align-items:center;gap:5px;flex:0 0 auto}
+.src .dt{width:8px;height:8px;border-radius:50%;background:var(--off);flex:0 0 auto}
+.src .dt.live{background:var(--grn)}
+.src .dt.warn{background:var(--red)}
+
+.main{padding:18px;flex:1;min-width:0}
+/* Разделы приложения — это div c id, оканчивающимся на View */
+div[id$="View"]{min-width:0}
+
+/* ══ КНОПКИ ═════════════════════════════════════════════════════════════
+   И0 · кнопки, которую можно не создавать, нет.
+   И1 · у оставшейся всегда иконка слева.
+   И2 · размеры фиксированы: 36 на компьютере, 40 на телефоне.
+   И4 · в покое плоская с рамкой, вдавливается только при нажатии. ── */
+.btn,.bt,.tbtn{height:36px;padding:0 13px;flex:0 0 auto;font-size:var(--f13);font-family:inherit;
+  border-radius:var(--rb);font-weight:500;overflow:hidden;max-width:100%;
+  border:1px solid var(--line2);background:var(--card);color:var(--ink);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.btn:hover,.bt:hover,.tbtn:hover{background:var(--hover);border-color:var(--mut)}
+.btn:active,.bt:active,.tbtn:active{background:var(--sel);border-color:var(--sel);color:var(--selink);
+  transform:translateY(1px)}
+.btn:disabled,.bt:disabled,.tbtn:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none}
+/* И3 · главная красная кнопка на экране одна */
+.btn.primary,.bt.r,.tbtn.go{background:var(--red);border-color:var(--red);color:#fff;font-weight:600}
+.btn.primary:hover,.bt.r:hover,.tbtn.go:hover{background:var(--redd);border-color:var(--redd)}
+.btn.primary:active,.bt.r:active,.tbtn.go:active{background:var(--redd);border-color:var(--redd);color:#fff;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.3)}
+.btn.danger,.tbtn.danger{color:var(--red);border-color:var(--redln)}
+.btn.danger:hover,.tbtn.danger:hover{background:var(--redbg);border-color:var(--red)}
+.btn.danger:active,.tbtn.danger:active{background:var(--red);border-color:var(--red);color:#fff}
+/* Залитое необратимое — там, где рядом стоит залитая главная кнопка:
+   контуром удаление рядом с ней читалось бледнее и второстепеннее. */
+.btn.danger.solid{background:var(--red);border-color:var(--red);color:#fff}
+.btn.danger.solid:hover,.btn.danger.solid:active{background:var(--redd);border-color:var(--redd);color:#fff}
+/* Графит меню — у выхода из экрана: белая кнопка терялась среди
+   одинаковых значков ряда, а «назад» ищут первым. */
+.btn.dark{background:var(--nv);border-color:var(--nv);color:var(--nvink)}
+.btn.dark:hover,.btn.dark:active{background:var(--nvhov);border-color:var(--nvhov);color:var(--nvink)}
+.btn.ghost{background:none;border-color:transparent}
+.btn.ghost:hover{background:var(--hover);border-color:transparent}
+.btn.ghost:active,.btn.ghost.on{background:var(--sel);border-color:var(--sel);color:var(--selink)}
+.tomfoot .tbtn.danger{margin-right:auto}
+.btn.sm,.bt.s,.tbtn.sm{height:32px;padding:0 10px;font-size:var(--f12);gap:6px}
+/* И7а · кнопка с общепринятой иконкой не имеет подписи ни на какой ширине */
+.btn.io,.bt.io,.tbtn.io{width:36px;padding:0}
+.btn.io .lbl,.bt.io .lbl,.tbtn.io .lbl{display:none}
+.btn.sm.io,.bt.s.io,.tbtn.sm.io{width:32px}
+.tbtn.x{width:36px;padding:0}
+.tbtn.x .lbl{display:none}
+.btn .lbl,.bt .lbl,.tbtn .lbl{overflow:hidden;text-overflow:ellipsis}
+/* И5б · кнопка не сжимается меньше содержимого */
+.bar .btn,.bar .bt,.tobar .tbtn,.tobar .btn{flex:0 0 auto}
+
+/* Полоса кнопок раздела */
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+
+/* Вкладки раздела (И5 · на телефоне сжимаются до иконки, у выбранной подпись остаётся) */
+.stabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+/* Кнопки экрана — в той же полосе, справа, на свободном месте последней строки */
+.stabs .acts{margin-left:auto;display:flex;gap:7px;align-items:center}
+.stab{height:36px;padding:0 15px;border-radius:9px;border:1px solid var(--line2);
+  background:var(--card);color:var(--ink);font-size:var(--f13);font-weight:500;
+  font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:7px;flex:0 0 auto}
+.stab:hover{background:var(--hover);border-color:var(--mut)}
+.stab:active{box-shadow:inset 0 2px 4px rgba(0,0,0,.16);transform:translateY(1px)}
+.stab.on{background:var(--red);border-color:var(--red);color:#fff;font-weight:600}
+
+/* Вкладки внутри карточки */
+.tabs{display:flex;gap:2px;flex-wrap:wrap}
+.tb{padding:7px 11px;font-size:var(--f13);color:var(--mut);cursor:pointer;background:none;border:none;
+  font-family:inherit;display:inline-flex;align-items:center;gap:6px;border-bottom:2px solid transparent;
+  font-weight:500}
+.tb.on{color:var(--ink);font-weight:600;border-bottom-color:var(--red)}
+
+/* Постраничная навигация — исключение из И1: цифры сами себя объясняют */
+.pg{display:flex;gap:3px;margin-left:auto}
+.pg button{width:28px;height:28px;border-radius:7px;border:1px solid transparent;background:none;
+  color:var(--mut);font-size:var(--f12);cursor:pointer;font-family:inherit}
+.pg button:hover{background:var(--hover)}
+.pg button.on{background:var(--red);color:#fff;border-color:var(--red);font-weight:600}
+
+/* ══ ЗАГОЛОВОК РАЗДЕЛА И КАРТОЧКИ ══════════════════════════════════════ */
+.ph{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.ph h1{font-size:21px;font-weight:700;letter-spacing:-.4px}
+.ph p{font-size:var(--f13);color:var(--mut);margin-top:2px}
+.ph .acts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+
+.cd{background:var(--card);border:1px solid transparent;border-radius:var(--rc);box-shadow:var(--sh1)}
+.cdh{display:flex;align-items:center;gap:10px;padding:13px 15px}
+/* И12в · заголовок карточки в одну строку */
+.cdh h2{font-size:var(--f15);font-weight:600;letter-spacing:-.2px;
+  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}
+/* И12б · ссылка в шапке карточки не повторяет заголовок: «Все», одно слово */
+.lnk{color:var(--blu);font-size:var(--f12);cursor:pointer;font-weight:500;
+  white-space:nowrap;flex:0 0 auto;background:none;border:none;font-family:inherit;padding:0}
+.lnk:hover{text-decoration:underline}
+.pd{padding:15px}
+.pd0{padding-top:0}
+.ft{padding:9px 15px;border-top:1px solid var(--line);font-size:var(--f12);color:var(--mut);text-align:right}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
+
+/* Карточка показателя (И13 · колонки только auto-fit, никогда в style) */
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));gap:12px;margin-bottom:16px}
+.k{background:var(--card);border:1px solid transparent;border-radius:var(--rc);box-shadow:var(--sh1);padding:13px 14px 9px}
+/* В тёмной теме тень на тёмной странице не читается — край держит рамка */
+html[data-t="d"] .cd,html[data-t="d"] .k{border-color:var(--line)}
+.k .r{display:flex;gap:11px;align-items:flex-start}
+.k .ic{width:34px;height:34px;border-radius:var(--rb);display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;background:var(--soft);color:var(--mut)}
+.k .lb{font-size:var(--f12);color:var(--mut)}
+.k .vl{font-size:clamp(19px,3.4vw,var(--f28));font-weight:700;letter-spacing:-.8px;line-height:1.15;
+  margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k .vl small{font-size:clamp(11px,1.7vw,var(--f14));font-weight:500;color:var(--mut);letter-spacing:0}
+.k .dl{font-size:var(--f12);margin-top:2px;line-height:1.3}
+.k svg.sp{width:100%;height:34px;display:block;margin-top:6px}
+.k.ok .ic{background:var(--grnbg);color:var(--grn)}
+.k.warn .ic{background:var(--ambbg);color:var(--amb)}
+.k.bad .ic{background:var(--redbg);color:var(--red)}
+.k.info .ic{background:var(--blubg);color:var(--blu)}
+.k.acc .ic{background:var(--viobg);color:var(--vio)}
+
+/* Знаки состояния */
+.ch{display:inline-flex;align-items:center;gap:4px;font-size:var(--f11);padding:2px 8px;border-radius:var(--rp);font-weight:600;
+  white-space:nowrap;background:var(--soft);color:var(--mut)}
+.ch svg.i{width:12px;height:12px;min-width:12px;min-height:12px}
+.ch.ok{background:var(--grnbg);color:var(--grn)}
+.ch.warn{background:var(--ambbg);color:var(--amb)}
+.ch.bad{background:var(--redbg);color:var(--red)}
+.ch.info{background:var(--blubg);color:var(--blu)}
+/* Метка-кнопка раскрывает под собой подробность — цепочку состояний. */
+button.ch{border:0;font-family:inherit;line-height:inherit;cursor:pointer;margin-top:6px}
+button.ch[aria-expanded="true"] svg.i{transform:rotate(180deg)}
+/* Цепочка состояний. Отдельный узел, а не метка .ch: у поставки шесть
+   стадий, и человеку важно не только где позиция сейчас, но и сколько ей
+   осталось пройти. Пройденное — зелёным, текущее — фирменным красным. */
+.chn{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:6px}
+/* Ряд меток без порядка: условия к вердикту, а не стадии. */
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.chn span{font-size:var(--f11);line-height:1;padding:4px 8px;border-radius:20px;
+  white-space:nowrap;background:var(--soft);color:var(--dim)}
+.chn span.done{background:var(--grnbg);color:var(--grn)}
+.chn span.on{background:var(--red);color:#fff;font-weight:600}
+/* Галочка выбора строки. Одна на все списки: до неё размер и цвет
+   задавались в разметке каждого экрана заново. */
+input[type=checkbox].pick{width:15px;height:15px;accent-color:var(--red);cursor:pointer;
+  flex:0 0 auto;margin:0}
+/* Пустое место вместо галочки — строке, которую отметить нельзя. Держит
+   столбик ровным и растёт вместе с галочкой на телефоне. */
+.pickgap{width:15px;flex:0 0 auto}
+.stt{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:var(--f12)}
+.stt i{width:7px;height:7px;border-radius:50%;display:block;flex:0 0 auto;background:var(--dim)}
+.stt.ok i{background:var(--grn)}.stt.warn i{background:var(--amb)}.stt.bad i{background:var(--red)}
+.pr{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.pr .a{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;flex:0 0 auto;background:var(--soft);color:var(--mut)}
+.bld{width:26px;height:26px;border-radius:7px;background:var(--soft);color:var(--mut);
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.sub{font-size:var(--f11);color:var(--dim);margin-top:1px}
+.hint{font-size:var(--f12);color:var(--mut);font-weight:400}
+.note{font-size:var(--f12);color:var(--mut);line-height:1.6}
+/* Состояние ошибки: экран не смог показать то, за чем пришёл, и называет
+   причину словами сервера. Модификатор .over кладёт подпись поверх области,
+   которая осталась пустой, и жесты этой области не перехватывает. */
+.errbox{padding:11px 13px;border:1px solid var(--amb);background:var(--ambbg);
+  border-radius:10px;font-size:var(--f13);color:var(--amb);line-height:1.6}
+.errbox.over{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  max-width:min(92%,420px);text-align:center;pointer-events:none;z-index:3}
+/* .x — отказ, который человек закрывает сам. Длинный текст нельзя гасить
+   по таймеру: его не успевают прочитать. Кнопка нужна, потому что иначе
+   строка висит в шапке до перезагрузки страницы. */
+.errbox.x{display:flex;gap:10px;align-items:flex-start;margin-top:9px}
+.errbox.x p{margin:0;flex:1;min-width:0}
+.errbox.x button{flex:none;background:none;border:0;padding:2px;margin:-2px;
+  cursor:pointer;color:var(--amb);line-height:0;opacity:.65;border-radius:6px}
+.errbox.x button:hover{opacity:1}
+.errbox.x button:focus-visible{outline:2px solid var(--amb);outline-offset:1px;opacity:1}
+/* Прогресс. Имя .prg, а не .bar: .bar в этом приложении — полоса кнопок. */
+.prg{height:6px;background:var(--line);border-radius:20px;overflow:hidden}
+.prg i{display:block;height:100%;border-radius:20px;background:var(--grn)}
+
+/* Строка списка */
+.it{display:flex;gap:10px;padding:11px 15px;border-top:1px solid var(--line);align-items:flex-start}
+.it:hover{background:var(--hover)}
+.it .tx{font-size:var(--f13);line-height:1.35}
+.it .sb{font-size:var(--f12);color:var(--mut);margin-top:1px}
+.it .wh{margin-left:auto;font-size:var(--f12);color:var(--mut);white-space:nowrap;
+  padding-left:8px;text-align:right}
+.ni{width:30px;height:30px;border-radius:var(--rb);display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;background:var(--soft);color:var(--mut)}
+.ni.ok{background:var(--grnbg);color:var(--grn)}
+.ni.warn{background:var(--ambbg);color:var(--amb)}
+.ni.bad{background:var(--redbg);color:var(--red)}
+.ni.info{background:var(--blubg);color:var(--blu)}
+.ni.acc{background:var(--viobg);color:var(--vio)}
+
+/* ══ ТАБЛИЦА ═══════════════════════════════════════════════════════════ */
+table{width:100%;border-collapse:collapse}
+thead th{font-size:var(--f12);color:var(--mut);font-weight:500;text-align:left;padding:9px 12px;
+  background:var(--soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  white-space:nowrap}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:var(--f13)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--hover)}
+.pn{font-weight:600}
+.xscroll{overflow-x:auto}
+/* Подпись под названием нужна только свёрнутой записи: на широком экране
+   то же значение стоит своим столбцом. */
+.xscroll tbody td:first-child .sub{display:none}
+
+/* Раскрывающаяся запись списка с формой внутри */
+.acc{border-bottom:1px solid var(--line)}
+.acc:last-child{border-bottom:none}
+.acch{display:flex;align-items:center;gap:12px;padding:11px 15px;cursor:pointer}
+.acch:hover{background:var(--hover)}
+.acch .nm{min-width:0;flex:1}
+.acch .nm b{font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis}
+.acch .rt{font-size:var(--f12);color:var(--mut);white-space:nowrap;text-align:right}
+.acch .chv{width:15px;height:15px;min-width:15px;min-height:15px;color:var(--dim);
+  transition:transform .18s;flex:0 0 auto}
+.acc.op .acch{background:var(--soft)}
+.acc.op .acch .chv{transform:rotate(180deg)}
+.accb{display:none;padding:13px 15px;background:var(--soft);border-top:1px solid var(--line)}
+.acc.op .accb{display:block}
+.frow{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fld label{font-size:var(--f12);color:var(--mut)}
+select,.inp{height:36px;border:1px solid var(--line2);border-radius:8px;background:var(--card);
+  color:var(--ink);font-size:var(--f13);font-family:inherit;padding:0 11px;min-width:150px}
+select:focus,.inp:focus{outline:none;border-color:var(--mut)}
+.wst{display:inline-flex;align-items:center;gap:6px;font-size:var(--f12);color:var(--mut);margin-top:2px}
+.wst i{width:7px;height:7px;border-radius:50%;display:block;background:var(--dim)}
+.wst.ok i{background:var(--grn)}
+
+/* ══ ЧАСТЬ 5. НЕДОСТАЮЩИЕ УЗЛЫ ═════════════════════════════════════════
+   Семь узлов на все 33 модальных окна приложения — одна работа на все
+   экраны сразу. Ниже они и лежат. ── */
+
+/* 1. Модальное окно */
+.mdl{position:fixed;inset:0;background:var(--ovl);z-index:60;display:none;
+  align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto}
+.mdl.on{display:flex}
+.mwin{background:var(--card);border:1px solid var(--line);border-radius:14px;width:100%;
+  max-width:720px;box-shadow:var(--sh3);overflow:hidden;margin:auto}
+.mwin.narrow{max-width:440px}
+.mhead{display:flex;gap:14px;align-items:flex-start;padding:16px 18px 13px;
+  border-bottom:1px solid var(--line)}
+.mhead b{font-size:var(--f15);font-weight:700;color:var(--ink);min-width:0;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mhead .s{font-size:var(--f12);color:var(--mut);line-height:1.5;margin-top:4px;white-space:normal}
+.mbody{padding:16px 18px 4px;max-height:64vh;overflow:auto}
+.mfoot{display:flex;gap:9px;justify-content:flex-end;padding:13px 18px 16px;
+  border-top:1px solid var(--line);background:var(--soft);flex-wrap:wrap}
+
+/* 2. Форма на всю страницу и поля */
+.frm{max-width:760px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px 17px}
+.fcell{min-width:0}
+.fcell.wide{grid-column:1/-1}
+.flab{font-size:var(--f12);font-weight:600;color:var(--ink);margin-bottom:6px;
+  display:flex;align-items:center;gap:7px}
+.flab i{font-style:normal;font-weight:500;font-size:var(--f11);color:var(--red)}
+.fin{width:100%;height:40px;padding:0 12px;border:1px solid var(--line2);border-radius:8px;
+  font-size:var(--f13);background:var(--card);color:var(--ink);text-align:left;
+  font-family:inherit;outline:none}
+.fin:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--redbg)}
+.fin::placeholder{color:var(--dim)}
+textarea.fin{height:auto;min-height:86px;padding:10px 12px;line-height:1.5;resize:vertical}
+.fnote{font-size:var(--f12);color:var(--mut);margin-top:6px}
+.fnote.ok{color:var(--grn);font-weight:600}
+.fnote.warn{color:var(--amb)}
+
+/* 3. Загрузка файла перетаскиванием */
+.fdrop{border:1.5px dashed var(--line2);border-radius:11px;background:var(--soft);
+  padding:22px 16px;text-align:center;color:var(--mut);cursor:pointer;font-size:var(--f13)}
+/* Полоса: та же зона, сжатая в строку, когда таблица уже не пуста */
+.fdrop.bar{display:flex;align-items:center;gap:10px;padding:9px 12px;text-align:left}
+.fdrop.bar svg.i{width:17px;height:17px;min-width:17px;min-height:17px;margin:0}
+.fdrop.bar b{display:inline;margin:0}
+.fdrop.bar span{display:none}
+.fdrop:hover,.fdrop.over{border-color:var(--red);background:var(--redbg);color:var(--red)}
+.fdrop svg.i{width:26px;height:26px;min-width:26px;min-height:26px;margin-bottom:7px}
+.fdrop b{display:block;color:var(--ink);font-weight:600;margin-bottom:2px}
+.fdrop.over b{color:var(--red)}
+
+/* 4. Пустое состояние списка */
+.est{padding:38px 20px;text-align:center;color:var(--mut)}
+.est svg.i{width:32px;height:32px;min-width:32px;min-height:32px;color:var(--off);margin-bottom:10px}
+.est b{display:block;font-size:var(--f15);font-weight:600;color:var(--ink);margin-bottom:4px}
+.est p{font-size:var(--f13);max-width:420px;margin:0 auto 14px}
+.est .btn,.est .bt{margin:0 auto}
+
+/* 5. Состояние ошибки */
+.erst{padding:26px 20px;text-align:center;color:var(--red)}
+.erst svg.i{width:30px;height:30px;min-width:30px;min-height:30px;margin-bottom:9px}
+.erst b{display:block;font-size:var(--f15);font-weight:600;margin-bottom:4px}
+.erst p{font-size:var(--f13);color:var(--mut);max-width:440px;margin:0 auto 14px}
+.erst .alt{margin-top:10px}
+.erin{margin:0 0 12px;padding:10px 13px;border-radius:9px;background:var(--redbg);
+  border:1px solid var(--redln);color:var(--red);font-size:var(--f13);font-weight:500;
+  display:flex;gap:9px;align-items:flex-start}
+
+/* 6. Состояние загрузки. Полоски вместо крутилки: видно, что появится. */
+.skel{border-radius:7px;background:linear-gradient(90deg,var(--soft) 25%,var(--hover) 37%,var(--soft) 63%);
+  background-size:400% 100%;animation:sk 1.3s ease-in-out infinite;height:13px;margin:9px 0}
+.skel.t{height:19px;width:44%}
+.skel.s{height:11px;width:62%}
+@keyframes sk{0%{background-position:100% 50%}100%{background-position:0 50%}}
+.skrow{padding:13px 15px;border-bottom:1px solid var(--line)}
+.skrow:last-child{border-bottom:none}
+@media(prefers-reduced-motion:reduce){.skel{animation:none}}
+
+/* 7. Календарь и выбор даты */
+.cal{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--card)}
+.calh{display:grid;grid-template-columns:repeat(7,1fr);background:var(--soft);
+  border-bottom:1px solid var(--line)}
+.calh span{padding:8px 6px;font-size:var(--f11);font-weight:600;color:var(--mut);
+  text-align:center;text-transform:uppercase;letter-spacing:.4px}
+.calg{display:grid;grid-template-columns:repeat(7,1fr)}
+.calg .cd{min-height:92px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:5px;background:var(--card)}
+.calg .cd:nth-child(7n){border-right:none}
+.calg .cd.out{background:var(--soft);color:var(--dim)}
+.calg .cd.past{opacity:.72}
+.calg .cd.now{box-shadow:inset 0 0 0 2px var(--red)}
+.calg .cd.over{box-shadow:inset 0 0 0 2px var(--blu);background:var(--blubg)}
+.cdn{font-size:var(--f11);color:var(--mut);font-weight:600;margin-bottom:3px;
+  display:flex;justify-content:space-between}
+.calg .cd.now .cdn{color:var(--red)}
+.cdn i{font-style:normal;background:var(--line);border-radius:20px;padding:0 5px;font-size:10px}
+.ci{font-size:var(--f11);line-height:1.25;padding:3px 6px;border-radius:6px;margin-bottom:3px;
+  cursor:grab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  border:1px solid transparent;user-select:none;background:var(--soft);color:var(--ink2)}
+.ci:active{cursor:grabbing}
+.ci.dragging{opacity:.4}
+.ci.as{background:var(--blubg);color:var(--blu);border-color:var(--blubg)}
+.ci.no{background:var(--soft);color:var(--mut);border-color:var(--line)}
+.ci.bad{background:var(--redbg);color:var(--red);border-color:var(--redln)}
+.ci.ok{background:var(--grnbg);color:var(--grn);border-color:var(--grnbg)}
+.cmore{font-size:10px;color:var(--dim);padding-left:3px}
+
+/* 8. Уведомление о сохранении */
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(8px);
+  background:var(--ink);color:var(--page);padding:11px 16px;border-radius:10px;font-size:var(--f13);
+  font-weight:500;opacity:0;transition:.22s;pointer-events:none;z-index:95;max-width:calc(100vw - 28px);
+  box-shadow:var(--sh2);display:flex;align-items:center;gap:9px}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Полноэкранная загрузка — осталась для длинных операций импорта */
+.load{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  flex-direction:column;gap:14px;background:var(--page);z-index:90}
+html[data-t="d"] .load{background:rgba(14,16,19,.86)}
+.load.on{display:flex}
+.load .sp{width:42px;height:42px;border:3px solid var(--line);border-top-color:var(--red);
+  border-radius:50%;animation:spin .8s linear infinite}
+.load .lt{font-size:var(--f13);font-weight:600;color:var(--ink)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ══ СМЕТЫ: СПИСОК ═════════════════════════════════════════════════════ */
+.specsearch{position:relative;margin-bottom:12px}
+.specsearch input{width:100%;height:38px;border:1px solid var(--line2);border-radius:9px;
+  padding:0 12px 0 36px;font-size:var(--f13);background:var(--soft);color:var(--ink);font-family:inherit}
+.specsearch input:focus{outline:none;background:var(--card);border-color:var(--mut)}
+.specsearch input::placeholder{color:var(--dim)}
+.speccard{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:12px 15px;
+  margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.speccard:hover{border-color:var(--line2);box-shadow:var(--sh1)}
+.speccard b{font-size:var(--f14);font-weight:600;display:block;min-width:0;
+  overflow:hidden;text-overflow:ellipsis}
+.speccard .s{font-size:var(--f12);color:var(--mut);white-space:nowrap;flex:0 0 auto}
+.pnm{min-width:0;flex:1 1 auto}
+.psum{font-size:var(--f13);font-weight:600;white-space:nowrap;flex:0 0 auto}
+
+/* Проект — обойма вокруг группы смет (#313). Контейнер читается формой,
+   а не иконкой и не цветом: смета — белая карточка на фоне страницы,
+   проект — рамка, внутри которой лежат такие же белые карточки. Иконка-папка
+   на телефоне уезжает во вторую строку вместе с подписью, а цветная метка
+   потратила бы единственный акцент экрана. */
+.prj{background:var(--soft);border:1px solid var(--line2);border-radius:12px;margin-bottom:8px}
+.prj>.speccard{margin:0;border-radius:11px}
+.prj.op>.speccard{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.disc{width:28px;height:28px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line2);background:var(--card);border-radius:8px;color:var(--mut);
+  cursor:pointer;padding:0}
+.disc:hover{background:var(--hover);color:var(--ink)}
+.disc:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+/* Отступ и волосяная линия — чтобы вложенность читалась и на длинном списке,
+   когда рамка проекта уже ушла за край экрана. */
+.prjkids{display:none;position:relative;padding:2px 9px 9px 34px}
+.prj.op>.prjkids{display:block}
+.prjkids:before{content:'';position:absolute;left:20px;top:0;bottom:16px;
+  border-left:1px solid var(--line2)}
+.prjkids>.speccard{margin:7px 0 0}
+.prjnote{font-size:var(--f11);color:var(--mut);padding:0 0 9px 34px}
+/* Раздел «CRM»: сумма и ссылки сделки — правым столбцом, переключатель сортировки документов */
+#crmView .crmr{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+#trackView .crmr{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:0 0 auto}
+#trackView .trkh{display:block;cursor:default;margin-bottom:12px}
+#trackView .trkh b{margin-top:2px}
+#trackView .vl[data-calc]{padding:9px 0}
+.crmsort{display:flex;gap:6px;padding:7px 0 0}
+
+/* ══ СМЕТЫ: РЕДАКТОР ═══════════════════════════════════════════════════ */
+.head{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 16px;
+  margin-bottom:12px}
+/* Поиск, выделение и шапка таблицы держатся на экране при прокрутке
+   (#278, #306): на смете в 176 позиций иначе не видно того, какая из пяти
+   числовых колонок какая. Липкий один контейнер на все три — смещение
+   считать не нужно, а оно непостоянно: полоса переносится на узком экране,
+   выделение появляется и исчезает. Тот же узор, что у полос вкладок в «Смене»
+   и «Обслуживании»: липнет на высоту шапки, на фоне страницы, рядом с карточкой —
+   sticky у потомка ограничен рамкой родителя. z-index 2 — выше списка,
+   ниже шапки (30) и выпадающих меню. */
+.stickhead{position:sticky;top:56px;z-index:2;background:var(--page)}
+.headbar{margin:0 0 10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.title{font-size:var(--f15);font-weight:700;letter-spacing:-.2px;cursor:text;
+  border:1px solid transparent;border-radius:8px;padding:2px 6px;margin:-2px -6px;
+  transition:border-color .15s,background .15s}
+.title:hover{border-color:var(--line2);background:var(--card)}
+.title.editing{border-color:var(--red);background:var(--card);outline:none}
+.title:empty:before{content:'Название объекта';color:var(--mut)}
+.meta{font-size:var(--f12);color:var(--mut);margin-top:3px}
+.ronote{margin-top:9px;padding:8px 12px;border-radius:9px;font-size:var(--f13);font-weight:600;
+  color:var(--amb);background:var(--ambbg);border:1px solid var(--amb)}
+.fwarn{border-color:var(--red)!important;background:var(--redbg)!important}
+/* Поиск не растягивается во всю полосу: запрос короткий, а справа в ней
+   стоит заметка о скорости каталога. */
+.search{flex:0 1 420px;min-width:220px;position:relative}
+.search input{width:100%;height:36px;border:1px solid var(--line2);border-radius:8px;padding:0 12px;
+  font-size:var(--f13);background:var(--card);color:var(--ink);font-family:inherit}
+.search input:focus{outline:none;border-color:var(--mut)}
+/* Потолок высоты: четыре строки целиком плюс «вручную» и начало пятой.
+   Строка с местом под снимок вдвое выше прежней, и при 320 px список
+   обрывался на второй. */
+.drop{position:absolute;left:0;right:0;top:40px;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;box-shadow:var(--sh2);z-index:20;max-height:380px;overflow:auto;display:none}
+.drop.on{display:block}
+/* Отбивка и линия — прямым детям: строка позиции многоуровневая, и общее
+   правило обводило каждый вложенный блок внутри неё отдельно. */
+.drop>div{padding:9px 12px;font-size:var(--f13);color:var(--ink)}
+.drop .c{font-size:var(--f11);color:var(--mut)}
+/* Сведения о работе каталога остаются видны при прокрутке: они относятся
+   к поиску целиком, а не к строке, на которую доехали. */
+.drop .dspeed{position:sticky;top:0;z-index:1;background:var(--card);font-weight:600;
+  border-bottom:1px solid var(--line)}
+.drop .errbox{margin:8px;padding:10px 12px}
+.drop .cd{border:0;border-radius:0;padding:0}
+.drop .drow{display:flex;align-items:flex-start;gap:10px;cursor:pointer;
+  border-bottom:1px solid var(--line)}
+.drop .drow:hover{background:var(--hover)}
+/* Наведение мышью и выбор стрелками — разные признаки: в списке они бывают
+   на разных строках, и добавится та, что выбрана клавишами. */
+.drop .drow.sel{background:var(--soft);box-shadow:inset 3px 0 0 var(--red)}
+.drop .drow .nm{flex:1 1 auto;min-width:0}
+.drop .drow .tl{display:flex;gap:10px;align-items:flex-start}
+.drop .drow .t{flex:1 1 auto;min-width:0;font-weight:500;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.drop .drow .pr{flex:0 0 auto;font-weight:600}
+.drop .drow .pr.noprice{font-weight:400;color:var(--dim)}
+.drop .drow .mt{display:flex;align-items:center;gap:7px;margin-top:3px;
+  font-size:var(--f11);line-height:1.4}
+.drop .drow .art{flex:0 0 auto;color:var(--ink2)}
+.drop .drow .st{flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;font-weight:600}
+.drop .drow .st i{display:block;width:7px;height:7px;border-radius:50%;background:currentColor}
+.drop .drow .st.in{color:var(--grn)}
+.drop .drow .st.out{color:var(--red)}
+.drop .drow .st.na{color:var(--mut)}
+/* На узкой ширине жертвуем именно магазином: артикул сверяют с проектом,
+   и обрезать его нельзя. */
+.drop .drow .shop{flex:1 1 auto;min-width:0;color:var(--mut);text-align:right;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Выход для того, чего в каталоге нет. Подложка и линия отделяют его от
+   найденного: найденной позицией он выглядеть не должен. */
+.drop .dman{background:var(--soft);border-top:1px solid var(--line2);cursor:pointer}
+.drop .dman:hover{background:var(--hover)}
+@media(min-width:901px){.drop{max-height:440px}}
+/* На узком экране подсказка идёт в ширину всей полосы, а не поля: в ширине
+   поля имя магазина обрезается до буквы, а название ломается посреди размера.
+   49px — низ поля ввода (отбивка полосы 9 + высота 36) и зазор 4. */
+@media(max-width:900px){
+  .headbar{position:relative}
+  .headbar .search{position:static}
+  .drop{top:49px}
+}
+/* Действия сметы — одним рядом значков в её карточке, а не своей полосой:
+   высота экрана уходит на позиции. Удаление прижато к правому краю ряда,
+   подальше от ежедневных действий. Вкладки — под названием, в той же
+   карточке. */
+.head .bar>.delspec{margin-left:auto}
+.head .tabbar{padding:0;margin-top:10px}
+@media(max-width:560px){
+  .head .bar{gap:6px}
+}
+
+/* ══ ПОДБОР ИЗ КАТАЛОГА (#348) ═══════════════════════════════════════════ */
+/* Панель стоит между липкой группой и таблицей сметы: смета остаётся на
+   экране, видно, куда кладёшь. Делится надвое — колонка производителей
+   и выдача. color задаётся здесь и на каждом узле, который может стоять
+   отдельно от панели: без него в тёмной теме текст берёт чернила страницы. */
+/* Потолок высоты 460 px. Панель — блок в потоке, и без потолка выдача на
+   полсотни строк утолкала бы смету за нижний край ровно тогда, когда смета
+   и нужна. 460 = шапка 40 + полоса отмеченного 42 + шесть строк по 60 +
+   подвал 42: под панелью остаётся 4–5 строк сметы. */
+.catpanel{background:var(--card);border:1px solid var(--line2);border-radius:11px;
+  box-shadow:var(--sh1);margin-bottom:10px;overflow:hidden;color:var(--ink);
+  max-height:clamp(340px,58vh,620px);
+  display:grid;grid-template-columns:224px minmax(0,1fr);
+  grid-template-rows:auto minmax(0,1fr)}
+.catpanel>.brandcol{border-right:1px solid var(--line);background:var(--soft)}
+.catpanel>.catside{display:flex;flex-direction:column;min-width:0;min-height:0}
+/* Блок в потоке не закрывается нажатием мимо, как закрывался выпадающий
+   список, поэтому «Свернуть» стоит в шапке — единственном месте, которое
+   видно и при открытой панели, и при свёрнутой. */
+.catpanel>.cph{grid-column:1/-1;display:flex;gap:9px;align-items:center;
+  flex-wrap:wrap;padding:9px 13px;border-bottom:1px solid var(--line);
+  background:var(--card);cursor:pointer;user-select:none}
+.catpanel>.cph:hover{background:var(--hover)}
+/* Шапка открытой панели — второй способ её закрыть. Пояснение в ней уходит
+   на телефоне: ряд из-за него занимал три строки. */
+@media(max-width:560px){.catpanel>.cph .cphint{display:none}}
+.catpanel>.cph .i{color:var(--mut);flex:0 0 auto}
+.catpanel>.cph .cpx{margin-left:auto;display:flex;align-items:center;gap:9px}
+.catpanel>.cph .ttl{font-size:var(--f13);font-weight:600}
+/* Кнопка «Производитель» открывает шторку и нужна только там, где колонки
+   нет: на компьютере колонка стоит постоянно, и кнопка была бы вторым
+   входом в то же самое. */
+.catpanel>.cph .fltbtn{display:none}
+
+/* Колонка производителей. Постоянно открыта: подбор фильтра — это перебор,
+   и прятать выдачу на время выбора нельзя. Своя строка поиска, «частые»
+   сверху, алфавит ниже. Раскладка на самом узле, а не на потомке панели:
+   колонка и шторка — один узел, и подвал держится внизу везде. */
+.brandcol{color:var(--ink);display:flex;flex-direction:column;min-width:0;min-height:0}
+.brandcol .bch{display:flex;align-items:center;gap:8px;padding:10px 12px;
+  border-bottom:1px solid var(--line)}
+.brandcol .bch .ttl{font-size:var(--f11);text-transform:uppercase;
+  letter-spacing:.4px;color:var(--mut);font-weight:600}
+.brandcol .bcs{padding:9px 12px;border-bottom:1px solid var(--line)}
+/* Своя ширина: у .search стоит min-width 220 px, а в колонке 224 px с полями
+   остаётся 200 — поле вылезало на выдачу. */
+.brandcol .bcs .search{min-width:0}
+.brandcol .bcl{overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:3px;flex:1}
+.brandcol .bcg{font-size:var(--f11);text-transform:uppercase;letter-spacing:.4px;
+  color:var(--mut);font-weight:600;padding:8px 6px 3px}
+/* Кнопка-переключатель, не квадратик: колонка стоит вплотную к выдаче,
+   у строк которой свои галочки выбора (#186). */
+.brandcol .bcl .btn{width:100%;justify-content:flex-start;text-align:left}
+.brandcol .bcl .btn .cnt{margin-left:auto;color:var(--mut);font-weight:400;font-size:var(--f11)}
+.brandcol .bcl .btn.on .cnt{color:inherit;opacity:.75}
+
+/* Полоса отмеченного над выдачей. Пилюли снимаются по одной на месте,
+   рядом «Сбросить всё». Кнопки «Применить» нет: отметка применяется сразу. */
+.selflt{display:flex;align-items:center;gap:7px;flex-wrap:wrap;color:var(--ink);
+  padding:9px 13px;border-bottom:1px solid var(--line);background:var(--soft)}
+.fchip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 3px 0 10px;
+  border-radius:20px;background:var(--card);border:1px solid var(--line2);
+  font-size:var(--f12);font-weight:600;color:var(--ink);white-space:nowrap}
+.fchip .x{width:20px;height:20px;border:none;background:none;color:var(--mut);
+  cursor:pointer;border-radius:20px;display:flex;align-items:center;justify-content:center;padding:0}
+.fchip .x:hover{background:var(--hover);color:var(--ink)}
+
+/* Выдача: список и подвал с постраничной навигацией. */
+.catside .catl{overflow-y:auto;flex:1}
+.catside .catf{display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:9px 13px;border-top:1px solid var(--line)}
+.catrow{display:flex;gap:10px;align-items:center;padding:9px 13px;
+  color:var(--ink);border-bottom:1px solid var(--line)}
+.catrow:last-child{border-bottom:none}
+.catrow:hover{background:var(--hover)}
+.catrow.on{background:var(--soft)}
+.catrow .nm{flex:1 1 auto;min-width:0;font-size:var(--f13)}
+.catrow .nm .t{font-weight:500}
+/* .mfr, не .brand: .brand здесь — логотип с вордмарком. */
+.catrow .mfr{color:var(--ink2);font-weight:600}
+.catrow .noprice{color:var(--dim)}
+/* Заголовок ряда «Смотрели недавно» / «Популярное в компании» в выдаче,
+   пока производитель не отмечен: тот же кегль, что у групп колонки. */
+.catside .catg{font-size:var(--f11);text-transform:uppercase;letter-spacing:.4px;
+  color:var(--mut);font-weight:600;padding:10px 13px 4px}
+/* Снимок товара (#365): один габарит и у картинки, и у рамки «нет фото»,
+   поэтому строка не прыгает по высоте. Картинка вписывается целиком на
+   подложке карточки: снимки поставщиков разных пропорций, обрез срезал бы
+   прибор. Рамка сплошная у снимка и пунктирная у пустого места. */
+.catrow .ph,.drop .drow .ph{width:42px;height:42px;flex:0 0 auto;margin:0;border-radius:8px;
+  border:1px dashed var(--line2);background:var(--soft);color:var(--dim);
+  display:flex;align-items:center;justify-content:center;font-size:var(--f11)}
+.catrow img.ph,.drop .drow img.ph{border-style:solid;background:var(--card);
+  object-fit:contain;padding:2px;box-sizing:border-box}
+
+/* Счётчик количества — в строке выдачи, до добавления. */
+.qty{display:flex;align-items:center;gap:3px;flex:0 0 auto}
+.qty button{width:26px;height:26px;border-radius:7px;border:1px solid var(--line2);
+  background:var(--card);color:var(--ink2);cursor:pointer;display:flex;
+  align-items:center;justify-content:center;padding:0}
+.qty button:hover{background:var(--hover);border-color:var(--mut)}
+.qty button:disabled{color:var(--off);cursor:default}
+.qty .fmini{width:44px;text-align:center}
+
+/* Строка производителя в шторке. На компьютере в колонке переключатели,
+   в шторке — галочки: выдачи на экране нет, спорить не с чем. Свой узел,
+   а не .catrow: у той место под снимок и цена, производителю они не нужны. */
+.bcrow{display:flex;align-items:center;gap:10px;padding:10px 12px;color:var(--ink);
+  border-bottom:1px solid var(--line);cursor:pointer}
+.bcrow:last-child{border-bottom:none}
+.bcrow:hover{background:var(--hover)}
+.bcrow.on{background:var(--soft)}
+.bcrow .nm{flex:1 1 auto;min-width:0;font-size:var(--f13);font-weight:500}
+/* Липкая кнопка с числом — только в шторке, где выдача не видна. */
+.bcfoot{padding:10px 12px;border-top:1px solid var(--line);background:var(--card);
+  display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+
+/* Широкий экран: выдача плиткой и потолок выше. Строками под потолком
+   460 px помещалось пять-шесть позиций — панель отодвигала смету вниз
+   и показывала взамен щель. Граница 1180 px — та же, с которой смета
+   показывается таблицей: ниже неё ряд плиток не из чего собрать. */
+@media(min-width:1181px){
+  .catside .catl{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));
+    gap:8px;padding:8px;align-content:start}
+  .catrow{flex-wrap:wrap;align-items:flex-start;border:1px solid var(--line);
+    border-radius:9px;padding:8px 10px}
+  .catrow:last-child{border-bottom:1px solid var(--line)}
+  .catrow>input.pick{order:1}
+  .catrow .ph{order:2;width:52px;height:52px}
+  .catrow .nm{order:3;flex:1 1 100%;margin-top:6px}
+  .catrow .qty{order:4;margin:6px 0 0 auto}
+  /* Пустое, ошибка и загрузка занимают всю ширину: в колонке плитки они
+     читались бы как ещё одна позиция. */
+  .catside .catl>.est,.catside .catl>.erst,.catside .catl>.cd,
+  .catside .catl>.catg{grid-column:1/-1}
+  .catside .catl>.catg{padding:4px 2px 0}
+}
+
+/* Телефон: колонка складывается в шторку. Граница 760 px — ниже неё 224 px
+   колонки съедают выдачу до нечитаемой. */
+@media(max-width:760px){
+  .catpanel{grid-template-columns:minmax(0,1fr)}
+  .catpanel>.brandcol{display:none}
+  .catpanel>.brandcol.sheet{display:flex;position:fixed;inset:0;z-index:60;
+    border:none;border-radius:0;background:var(--card)}
+  .catpanel>.brandcol.sheet .bcl{max-height:none}
+  .catpanel>.cph .fltbtn{display:inline-flex}
+  .qty button{width:36px;height:36px}
+  .qty .fmini{width:52px;height:36px;font-size:var(--f13)}
+}
+.selbar{display:none;gap:8px;align-items:center;background:var(--redbg);border:1px solid var(--redln);
+  border-radius:10px;padding:8px 12px;margin-bottom:10px;flex-wrap:wrap}
+.selbar.on{display:flex}
+.selbar b{color:var(--red)}
+
+/* Строка позиции. Уплотнена: было четыре строки текста в названии и высокие
+   поля — на смете в 264 позиции это полтора экрана на десяток строк.
+   Артикул, магазин и пометки теперь идут второй строкой в подбор. */
+.thead,.row,.foot{display:grid;
+  grid-template-columns:24px 22px 26px minmax(0,1fr) 60px 52px 90px 94px 90px 94px 100px 26px;gap:6px}
+/* Обозначения колонок держатся в одну строку. Переносило «Цена монт. ₽»:
+   десять знаков со знаком рубля не влезали в 80 px. Знак рубля повторялся
+   в полосе пять раз и ничего не различал — он назван один раз справа
+   от вкладок, и подписи снова помещаются в свои ширины.
+
+   Ширины считаны не по подписям, а по числам: подпись — не самое широкое
+   в денежной колонке. Цена в семь знаков с копейками занимает в поле 88 px
+   вместе с полями и рамкой, «12 345 678,90» значением — 93 px. На смете
+   с ценами в сотни тысяч прежние 80 прятали первую цифру, и 268 052 читалось
+   как 68 052. Колонку названия на широком экране есть откуда забрать.
+
+   «Ед.» считана так же: «компл.» занимает 43 px, плюс 16 на поля и рамку
+   поля ввода — в прежних 44 от неё оставалось «комп». */
+.thead{padding:6px 10px;font-size:var(--f11);text-transform:uppercase;letter-spacing:.4px;
+  color:var(--mut);font-weight:600}
+.thead>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Числовые колонки выровнены вправо — подпись стоит над своими числами
+   (`design-language.md` § «Как показывается каждый тип данных»). На узком
+   экране строка складывается в подписанные блоки, и выравнивание там своё. */
+@media(min-width:1181px){
+  .thead>.num,.foot>.num{text-align:right}
+  .row>.cell.num{text-align:right}
+  .row>.cell.num input.f{text-align:right}
+}
+.thead input[type=checkbox],.row input[type=checkbox]{width:15px;height:15px;
+  accent-color:var(--red);cursor:pointer}
+.row{align-items:center;padding:6px 10px}
+.namecell{display:flex;flex-wrap:wrap;align-items:baseline;gap:1px 7px;min-width:0}
+.namecell>.nmField{flex:1 1 100%;min-height:0}
+.namecell>.varbox,.namecell>.offers{flex:1 1 100%}
+.namecell .sub{margin-top:0}
+.namecell .attn{flex:1 1 100%}
+.namecell .attn:empty{display:none}
+.namecell .attn>.pill{margin-left:0}
+.rowwrap{background:var(--card);border:1px solid var(--line);border-radius:9px;margin-bottom:5px}
+.rowwrap:hover{border-color:var(--line2)}
+.rowwrap.menuopen{position:relative;z-index:60}
+.rowwrap.sel{border-color:var(--red);background:var(--redbg)}
+/* Позиция без цены помечается точкой в углу карточки, а не заливкой всей
+   строки. После импорта спецификации без цены приезжает половина позиций,
+   и залитая смета читалась жёлтой целиком: отметка перестаёт быть отметкой,
+   когда её несёт каждая вторая строка. Точка стоит выше ручки перетаскивания
+   и не спорит с выделением строки — то красит рамку и фон. */
+.rowwrap.needs{position:relative}
+.rowwrap.needs::before{content:"";position:absolute;left:6px;top:6px;
+  width:7px;height:7px;border-radius:50%;background:var(--amb);pointer-events:none}
+/* Подраздел — граница между группами позиций, а не ещё одна строка.
+   Отбивка сверху, засечка слева: раньше он отличался от позиции только
+   оттенком серого и терялся в списке. */
+.rowwrap.section{background:var(--soft);border-color:var(--line2);
+  box-shadow:inset 3px 0 0 var(--red);margin:18px 0 6px}
+/* Отмеченный раздел красится как отмеченная позиция: подложка раздела иначе
+   перекрывает выделение, и в пачке не видно, что заголовок в неё входит. */
+.rowwrap.section.sel{background:var(--redbg);border-color:var(--red)}
+#list>.rowwrap.section:first-child{margin-top:0}
+.foot{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;
+  font-weight:700;margin-top:4px}
+.drag{cursor:grab;color:var(--off);text-align:center;touch-action:none;
+  display:flex;align-items:center;justify-content:center}
+/* Пока строку тащат, выделение текста выключено на всей странице: перетаскивание
+   ведёт библиотека своими средствами, и для мыши это обычное нажатие. */
+body.dnd{user-select:none;-webkit-user-select:none}
+/* Перетаскивание рисует две строки разом: слот, куда она встанет, и саму строку
+   под курсором. Слот приглушён, строка поднята тенью — иначе они накладываются
+   и читаются как одна размытая. */
+.rowwrap.sortable-ghost{opacity:.35}
+.rowwrap.sortable-fallback{background:var(--card);box-shadow:var(--sh3);border-color:var(--red);
+  cursor:grabbing}
+.nmField{font-size:var(--f13);font-weight:500;border:1px solid transparent;border-radius:7px;
+  padding:3px 5px;width:100%;background:transparent;line-height:1.32;color:var(--ink);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  overflow-wrap:anywhere;cursor:text;min-height:22px}
+.nmField:hover{border-color:var(--line2)}
+.nmField:focus{outline:none;border-color:var(--red);background:var(--card);
+  -webkit-line-clamp:unset;display:block;overflow:visible}
+.nmField:empty:before{content:'Название позиции';color:var(--mut)}
+.cell label{display:none}
+input.f{width:100%;height:29px;border:1px solid var(--line2);border-radius:7px;padding:0 7px;
+  font-size:var(--f13);text-align:right;background:var(--card);color:var(--ink);font-family:inherit}
+input.f:focus{outline:none;border-color:var(--mut)}
+.fmini{width:62px;height:24px;border:1px solid var(--line2);border-radius:6px;padding:0 5px;
+  font-size:var(--f12);text-align:right;background:var(--card);color:var(--ink);font-family:inherit}
+.subin{color:var(--mut)}
+.row .cell b{font-weight:600}
+.secrow{display:flex;align-items:center;gap:10px;padding:9px 12px;min-width:0}
+.secttl{flex:1 1 auto;min-width:0;font-weight:700;font-size:var(--f14);letter-spacing:-.2px;
+  border:1px solid transparent;border-radius:7px;
+  padding:4px 6px;background:transparent;color:var(--ink);font-family:inherit}
+.secttl:focus{outline:none;border-color:var(--line2);background:var(--card)}
+.secsum{font-size:var(--f13);color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums;
+  flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.seckind{color:var(--red);white-space:nowrap}
+a.lk{display:inline-flex;align-items:center;gap:3px;color:var(--blu);text-decoration:none;
+  margin-left:6px;font-size:var(--f11);font-weight:600;vertical-align:middle}
+a.lk:hover{text-decoration:underline}
+a.lk svg{display:block}
+/* Вторая строка позиции — один узел вместо трёх. Порядок постоянный:
+   артикул, магазин, наличие, «ещё N», между ними точка. Артикул первым:
+   по нему ищут чаще, чем по названию. Наличие — цветная точка при
+   приглушённой подписи: цвет несёт смысл, а голос остаётся тихим. */
+.namecell>.rowmeta{flex:1 1 100%;display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  min-width:0;font-size:var(--f11);line-height:1.5;color:var(--mut);margin-top:1px}
+.namecell>.rowmeta .sep{color:var(--off)}
+.namecell>.rowmeta .art{color:var(--ink2);font-weight:600}
+.namecell>.rowmeta .st{display:inline-flex;align-items:center;gap:4px}
+.namecell>.rowmeta .st i{display:block;width:7px;height:7px;border-radius:50%}
+.namecell>.rowmeta .st.in i{background:var(--grn)}
+.namecell>.rowmeta .st.out i{background:var(--red)}
+.namecell>.rowmeta .st.na i{background:var(--off)}
+.namecell>.rowmeta .shop{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.offerline{font-size:var(--f11);color:var(--mut);cursor:pointer;margin-top:2px;display:inline-block}
+.namecell>.rowmeta .offerline{margin-top:0}
+.offerline:hover{color:var(--ink)}
+.flag{font-size:var(--f11);color:var(--amb);background:var(--ambbg);padding:1px 7px;
+  border-radius:20px;margin-left:4px}
+.chip-wk{font-size:var(--f11);color:var(--grn);background:var(--grnbg);padding:1px 8px;
+  border-radius:20px;margin-left:4px;font-weight:600}
+.badge{font-size:var(--f11);padding:2px 7px;border-radius:20px;background:var(--ambbg);
+  color:var(--amb);font-weight:600}
+/* Цвет и фон метки — парой и токенами, поэтому вечерняя тема их подхватывает
+   сама. Без модификаторов метка была одна, янтарная, и «принято» пришлось бы
+   красить на месте — то есть завести оттенок мимо таблицы цветов. */
+.badge.ok{background:var(--grnbg);color:var(--grn)}
+.badge.off{background:var(--soft);color:var(--mut)}
+/* Полоса вкладок несёт три вещи: сами вкладки, вход в подбор за разделителем
+   — так видно, что это не третья вкладка, — и единицу денег, названную один
+   раз на всю таблицу вместо пяти раз в подписях колонок. */
+.tabbar{padding:0 0 8px;display:flex;align-items:center;gap:10px}
+.tabbar .stabs{margin-bottom:0;align-items:center}
+.tabbar .tsep{width:1px;height:22px;background:var(--line2);margin:0 5px;align-self:center;
+  flex:0 0 auto}
+.tabbar .curnote{margin-left:auto;white-space:nowrap}
+@media(max-width:1180px){.tabbar .curnote{display:none}}
+/* Маржа строки — цветное число, а не залитая метка: метка .secmargin стоит
+   на строке-разделе, и две метки рядом спорят за внимание. Цвет несёт
+   вердикт, форма — уровень: строка числом, раздел меткой. */
+.mg{font-weight:600}
+.mg.ok{color:var(--grn)}
+.mg.warn{color:var(--amb)}
+.mg.bad{color:var(--red)}
+/* Откуда взялась себестоимость: справка, а не оценка, поэтому пилюля
+   нейтральная и стоит там же, где возраст цены. */
+.pill.src{background:var(--soft);color:var(--mut);border:1px solid var(--line2);white-space:nowrap}
+/* Подписи вкладок не переносятся: «КП клиенту» в две строки ломает высоту. */
+.stabs .stab .lbl{white-space:nowrap}
+/* Поле себестоимости, в которое ещё не вводили. Не ошибка — подсказка. */
+/* Серым, а не тёплым: на строке уже стоят янтарная точка «требует внимания»
+   и пилюля возраста цены, и третий тёплый цвет спорил с ними за внимание. */
+input.f.todo{background:var(--soft);border-color:var(--line2)}
+input.f.todo::placeholder{color:var(--dim)}
+/* Раздел, где себестоимость вписана не у всех позиций: вердикта нет, потому
+   что он был бы неправдой. */
+.secpart{display:inline-block;font-size:var(--f11);color:var(--amb);
+  background:var(--ambbg);padding:2px 8px;border-radius:10px;font-weight:600;
+  white-space:nowrap}
+.varbox{margin-top:8px;background:var(--soft);border:1px solid var(--line);border-radius:9px;
+  padding:9px 11px}
+.varbox .vh{font-size:var(--f12);color:var(--mut);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.varrow{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:6px 0;
+  border-top:1px solid var(--line);font-size:var(--f13)}
+.varrow:first-of-type{border-top:none}
+/* Цена решает, подставлять позицию или нет: жирная, размер и цвет прежние */
+.varrow .vprice{font-weight:700}
+.offers{display:none;background:var(--soft);border-top:1px solid var(--line);padding:9px 12px}
+.offers.on{display:block}
+.off{display:flex;align-items:center;justify-content:space-between;padding:7px 0;
+  border-bottom:1px solid var(--line);font-size:var(--f13)}
+.off:last-child{border:none}
+.shop{font-weight:600}
+.pill{font-size:var(--f11);padding:1px 8px;border-radius:20px;margin-left:6px;font-weight:600}
+.pill.in{background:var(--grnbg);color:var(--grn)}
+.pill.out{background:var(--redbg);color:var(--red)}
+/* Магазин остатка не сообщает: ни «есть», ни «нет» — вопрос к заказу. */
+.pill.na{background:var(--soft);color:var(--mut)}
+/* Цена, за которой сборщик давно не заходил. Внимание, а не авария:
+   такую цену можно поставить в КП, но глядя на неё, а не вслепую. */
+.pill.old{background:var(--ambbg);color:var(--amb)}
+/* Прирост к прошлому периоду — только там, где прошлый период есть в данных */
+.pill.up{background:var(--grnbg);color:var(--grn)}
+.pill.dn{background:var(--redbg);color:var(--red)}
+.k .vl .pill{vertical-align:middle;letter-spacing:0;font-size:var(--f11)}
+.mn{cursor:pointer;color:var(--mut);text-align:center;position:relative;
+  display:flex;align-items:center;justify-content:center}
+.mn:hover{color:var(--ink)}
+.menu{position:absolute;right:0;top:26px;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;box-shadow:var(--sh2);z-index:50;display:none;min-width:158px;
+  text-align:left;overflow:hidden}
+.menu.on{display:block}
+.menu div{padding:9px 12px;font-size:var(--f13);cursor:pointer;border-bottom:1px solid var(--line)}
+.menu div:last-child{border-bottom:none}
+.menu div:hover{background:var(--hover)}
+#calcpanel{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:11px;
+  padding:4px 16px;max-width:560px;margin-left:auto}
+#calcpanel:empty{display:none}
+.calchead{font-weight:700;padding:11px 0 9px;border-bottom:1px solid var(--line);font-size:var(--f15)}
+.cline{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;
+  border-bottom:1px solid var(--line);font-size:var(--f13)}
+.cline:last-child{border:none}
+.cline b{white-space:nowrap;font-variant-numeric:tabular-nums}
+.cline.total{font-weight:800;font-size:var(--f15);color:var(--red);padding:12px 0}
+
+/* ══ ОТЧЁТЫ И ТАБЕЛЬ ═══════════════════════════════════════════════════ */
+.rptwrap{overflow-x:auto;border:1px solid var(--line);border-radius:11px;background:var(--card);
+  margin-bottom:14px}
+.rpt{border-collapse:collapse;font-size:var(--f12);white-space:nowrap;width:100%}
+.rpt th,.rpt td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+  padding:6px 9px;text-align:center;background:var(--card)}
+.rpt thead th{background:var(--soft);font-weight:600;color:var(--mut);position:sticky;top:0;z-index:1}
+.rpt th.nm,.rpt td.nm{text-align:left;position:sticky;left:0;background:var(--card);min-width:190px;
+  font-weight:500;z-index:2}
+.rpt thead th.nm{z-index:3;background:var(--soft)}
+.rpt td.we{background:var(--soft)}
+.rpt th.we{background:var(--line)}
+.rpt .wd{font-size:9px;color:var(--mut);font-weight:400;line-height:1}
+.rpt .money{text-align:right;font-variant-numeric:tabular-nums}
+.rpt tfoot td{font-weight:700;background:var(--soft);border-top:2px solid var(--line2)}
+.rpt tbody tr:hover td{background:var(--hover)}
+.rpt tbody tr:hover td.nm{background:var(--hover)}
+.sec{font-weight:600;margin:18px 0 8px;font-size:var(--f15);display:flex;align-items:center;gap:8px}
+.sec:first-child{margin-top:0}
+
+/* ══ ЦЕНЫ МОНТАЖА (#mpBox) И ИСТОРИЯ ПРАВОК (#hsBox) ═══════════════════ */
+#mpOv,#hsOv{position:fixed;inset:0;background:var(--ovl);z-index:70;display:none}
+#mpOv.on,#hsOv.on{display:block}
+#mpBox,#hsBox{position:fixed;inset:0;background:var(--page);z-index:71;display:none;
+  flex-direction:column}
+#hsBox{z-index:81}
+#mpBox.on,#hsBox.on{display:flex}
+#mpBox .mph,#hsBox .hh{padding:12px 14px;border-bottom:1px solid var(--line);background:var(--card)}
+#mpBox .mph h3,#hsBox .hh h3{margin:0 0 8px;font-size:var(--f15);font-weight:700}
+#hsBox .hh h3{margin-bottom:4px}
+#mpBox .shtop,#hsBox .shtop{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+#mpBox .shtop h3,#hsBox .shtop h3{margin:0}
+#mpBox .mpbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#mpBox .mpbar input[type=search]{flex:1;min-width:160px;height:36px;padding:0 11px;
+  border:1px solid var(--line2);border-radius:8px;font-size:var(--f13);background:var(--card);
+  color:var(--ink);font-family:inherit}
+#mpBox .mplist,#hsBox .hlist{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:var(--card)}
+/* Плотные строки, не карточки: расчёт на 2000 позиций, а не на четыре */
+#mpBox .mpr{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line)}
+#mpBox .mpr.empty{background:var(--ambbg)}
+#mpBox .mpr.dirty{background:var(--grnbg)}
+#mpBox .mpn{flex:1;min-width:0}
+#mpBox .mpn .t{font-size:var(--f13);line-height:1.25;overflow:hidden;text-overflow:ellipsis;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#mpBox .mpr input.p{width:104px;flex:0 0 auto;height:34px;text-align:right;padding:0 8px;
+  border:1px solid var(--line2);border-radius:8px;font-size:var(--f13);background:var(--card);
+  color:var(--ink);font-family:inherit}
+#mpBox .mpr input.p.mixed{border-color:var(--red);background:var(--redbg)}
+#mpBox .mpf,#hsBox .hf{padding:10px 14px;border-top:1px solid var(--line);background:var(--card);
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#hsBox .hr{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line)}
+#hsBox .hr.now{background:var(--redbg)}
+#hsBox .hn{flex:1;min-width:0}
+#hsBox .hn .t{font-size:var(--f13)}
+#hsBox .hd{white-space:nowrap;font-size:var(--f13);font-variant-numeric:tabular-nums}
+#hsBox .plus{color:var(--grn)}
+#hsBox .minus{color:var(--red)}
+@media(max-width:520px){#hsBox .hr{flex-wrap:wrap}#hsBox .hd{width:100%}}
+@media(max-width:420px){#mpBox .mpr input.p{width:88px}}
+
+/* ══ РАСЧЁТ СДЕЛКИ ═════════════════════════════════════════════════════ */
+#dealView{padding:0 0 40px}
+.dl{max-width:1000px}
+.dl .tabs{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.dl .tab{height:36px;padding:0 15px;border:1px solid var(--line2);border-radius:9px;font-weight:500;
+  cursor:pointer;background:var(--card);color:var(--ink);font-size:var(--f13);font-family:inherit;
+  display:inline-flex;align-items:center;gap:7px;flex:0 0 auto}
+.dl .tab:hover{background:var(--hover);border-color:var(--mut)}
+.dl .tab:active{box-shadow:inset 0 2px 4px rgba(0,0,0,.16);transform:translateY(1px)}
+.dl .tab.on{background:var(--red);border-color:var(--red);color:#fff;font-weight:600}
+.dl .sec .hint{font-weight:400;font-size:var(--f12);color:var(--mut)}
+.dl .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.dl label.fld{display:flex;flex-direction:column;gap:5px;font-size:var(--f12);color:var(--mut)}
+.dl .gi{font-size:var(--f13);color:var(--ink);padding:0 11px;height:38px;border:1px solid var(--line2);
+  border-radius:8px;background:var(--card);width:100%;font-family:inherit}
+.dl .gi:focus{outline:none;border-color:var(--red)}
+.dl .gi[readonly]{background:var(--soft);color:var(--mut)}
+.dl table.dt{width:100%;border-collapse:collapse;font-size:var(--f13);background:var(--card);
+  border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.dl table.dt th{text-align:left;color:var(--mut);font-weight:500;padding:8px 10px;
+  border-bottom:1px solid var(--line);font-size:var(--f12);background:var(--soft)}
+.dl table.dt td{padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.dl table.dt tr:last-child td{border-bottom:none}
+.dl table.dt input,.dl table.dt select{width:100%;border:1px solid transparent;border-radius:6px;
+  padding:6px 7px;font-size:var(--f13);font-family:inherit;background:transparent;color:var(--ink);
+  min-width:0}
+.dl table.dt input:focus,.dl table.dt select:focus{outline:none;border-color:var(--red);
+  background:var(--card)}
+.dl table.dt input.num{text-align:right;font-variant-numeric:tabular-nums}
+.dl table.dt select{background:var(--soft)}
+.dl .tsum{text-align:right;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dl .xrow{cursor:pointer;color:var(--mut);text-align:center;width:28px;line-height:1}
+.dl .xrow:hover{color:var(--red)}
+.dl .addrow{margin-top:6px;padding:9px 12px;border:1px dashed var(--line2);border-radius:9px;
+  background:var(--card);cursor:pointer;font-size:var(--f13);color:var(--mut);font-family:inherit;width:100%}
+.dl .addrow:hover{border-color:var(--red);color:var(--red)}
+.dl .res{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:14px}
+.dl .m{padding:13px 14px;border-radius:11px;background:var(--card);border:1px solid var(--line)}
+.dl .m .l{font-size:var(--f12);color:var(--mut);margin-bottom:3px}
+.dl .m .v{font-size:clamp(19px,3.2vw,var(--f28));font-weight:700;letter-spacing:-.8px;line-height:1.15;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+/* Главный показатель. Класс называется .key, а не .main: «main» — это класс
+   контейнера страницы, и querySelector('.main') попадал в карточку
+   показателя вместо самой страницы. */
+.dl .m.key{background:var(--redbg);border-color:var(--redln)}
+.dl .m.key .v{color:var(--red)}
+.dl .m.good .v{color:var(--grn)}
+.dl .m.bad .v{color:var(--red)}
+.dl .m .sub{font-size:var(--f11);color:var(--mut);margin-top:3px}
+.dl .tgl{width:100%;margin-top:12px;padding:10px;border:1px solid var(--line2);border-radius:9px;
+  background:var(--card);font-weight:500;cursor:pointer;font-size:var(--f13);color:var(--ink);
+  font-family:inherit}
+.dl .tgl:hover{border-color:var(--mut);background:var(--hover)}
+.dl .method{margin-top:10px;padding:13px;border:1px solid var(--line);border-radius:11px;
+  background:var(--soft);font-size:var(--f13);line-height:1.8}
+.dl .note{margin-top:12px;font-size:var(--f12);color:var(--mut);line-height:1.6}
+.dl div.warn{margin-top:12px;padding:11px 13px;border:1px solid var(--amb);background:var(--ambbg);
+  border-radius:10px;font-size:var(--f13);color:var(--amb);line-height:1.6}
+.dl .bar .grow{flex:1}
+
+/* ══ СМЕНА, ТАБЕЛЬ, ОБЪЕКТЫ (#shiftView) ═══════════════════════════════ */
+#shiftView .emprow{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-bottom:1px solid var(--line);cursor:pointer}
+#shiftView .emprow:hover{background:var(--hover)}
+#shiftView .emprow.open{background:var(--soft);font-weight:600}
+#shiftView .empn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:var(--f13)}
+#shiftView .empn .s{font-weight:400;color:var(--mut)}
+#shiftView .empv{text-align:right;white-space:nowrap;font-size:var(--f13);
+  font-variant-numeric:tabular-nums}
+#shiftView .empc{width:14px;display:flex;justify-content:center;color:var(--mut)}
+#shiftView .empc .chv{width:14px;height:14px;min-width:14px;min-height:14px}
+#shiftView .emprow.open .empc .chv{transform:rotate(180deg)}
+#shiftView .empbox{padding:11px 14px 14px;border-bottom:1px solid var(--line);background:var(--soft)}
+#shiftView .empbox .bar{flex-wrap:wrap}
+#shiftView .speccard{margin:8px 0}
+#shiftView .bar{position:sticky;top:56px;background:var(--page);z-index:2;
+  border-bottom:1px solid var(--line);margin:0 -18px 14px;padding:10px 18px;
+  overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+#shiftView .bar::-webkit-scrollbar{height:0;display:none}
+#shiftView .sec{font-weight:600;margin:16px 0 8px;font-size:var(--f15)}
+/* Снимки смены */
+.phrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.phi{width:96px;cursor:pointer;position:relative}
+.phimg{width:96px;height:96px;border-radius:9px;overflow:hidden;background:var(--soft);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+.phimg img{width:100%;height:100%;object-fit:cover;display:block}
+.phw{font-size:var(--f11);color:var(--mut);text-align:center;padding:4px;line-height:1.3}
+.phc{font-size:var(--f11);color:var(--mut);margin-top:3px;text-align:center}
+/* Снимки в ячейке таблицы. В 96 px ячейка укладывает их столбиком, и строка
+   вырастает на высоту всех снимков сразу; время съёмки в такой мелочи всё
+   равно не прочитать, оно остаётся в подсказке при наведении. */
+td .phrow{gap:6px;margin-top:0;min-width:110px}
+td .phi,td .phimg{width:52px}
+td .phimg{height:52px;border-radius:7px}
+td .phc{display:none}
+/* Кнопка «убрать снимок» — поверх миниатюры, директору и администратору */
+.phdel{position:absolute;top:4px;right:4px;width:24px;height:24px;padding:0;
+  border-radius:7px;display:flex;align-items:center;justify-content:center}
+.phdel .i{width:14px;height:14px}
+#phOv,#tphOv,#plphOv{position:fixed;inset:0;background:rgba(10,12,18,.92);z-index:95;display:none;
+  align-items:center;justify-content:center;padding:16px}
+#phOv.on,#tphOv.on,#plphOv.on{display:flex}
+#phOv img,#tphOv img,#plphOv img{max-width:100%;max-height:100%;object-fit:contain}
+#phOv #phClose,#tphOv #tphClose,#plphOv #plphClose{position:absolute;top:14px;right:14px}
+
+/* ══ ТО И ОБСЛУЖИВАНИЕ (#toView) ═══════════════════════════════════════
+   Раздел самый большой — одиннадцать экранов. Стили лежат здесь, а не
+   вставляются скриптом: вставленные скриптом не знали про вечернюю тему. ── */
+#toView{padding-bottom:48px}
+#toView .tobar{position:sticky;top:56px;background:var(--page);z-index:2;
+  border-bottom:1px solid var(--line);margin:0 -18px 14px;padding:10px 18px;display:flex;gap:6px;
+  overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+#toView .tobar::-webkit-scrollbar{height:0;display:none}
+#toView .tohead{padding:0 0 12px}
+/* Заголовок раздела теперь свой (.ph h1). Внутренние h2 — подзаголовки
+   экранов, и по размеру они должны отличаться, иначе на странице два
+   одинаково крупных заголовка подряд. */
+#toView h2{font-size:var(--f15);margin:0;font-weight:600;letter-spacing:-.2px}
+#toView .s,.tomodal .s{font-size:var(--f12);color:var(--mut);line-height:1.45}
+#toView .torow{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+#toView .tocard{border:1px solid var(--line);border-radius:11px;padding:14px 15px;
+  margin:0 0 10px;background:var(--card)}
+#toView .tocard[data-to]{cursor:pointer}
+#toView .tocard[data-to]:hover{border-color:var(--line2);box-shadow:var(--sh1)}
+#toView .tolist{margin:0 0 10px;border:1px solid var(--line);border-radius:11px;
+  overflow:hidden;background:var(--card)}
+#toView .toli{display:flex;gap:12px;align-items:center;justify-content:space-between;
+  padding:12px 15px;border-bottom:1px solid var(--line)}
+#toView .toli:last-child{border-bottom:none}
+#toView .toli:hover{background:var(--hover)}
+#toView .toli.col{display:block}
+#toView .toli[data-to]{cursor:pointer}
+#toView .toli.nest{padding-left:30px;background:var(--soft)}
+#toView .toli.nest ol{margin:6px 0 0;padding-left:18px}
+#toView .toli>div:first-child{min-width:0;flex:1}
+#toView .tosec{font-weight:700;font-size:var(--f15);margin:20px 0 8px;display:flex;
+  align-items:center;justify-content:space-between;gap:10px}
+#toView .tosec .s{font-weight:400}
+#toView .tonote{margin:0 0 10px;padding:14px 15px;border-radius:11px;background:var(--card);
+  border:1px dashed var(--line2);color:var(--mut);font-size:var(--f13)}
+#toView .tonote.warn{background:var(--ambbg);border-style:solid;border-color:var(--amb);color:var(--amb)}
+/* Шаг «что делать дальше». Показывается только один — следующий. */
+#toView .tostep{margin:0 0 12px;padding:14px 15px;border-radius:11px;display:flex;gap:14px;
+  align-items:center;justify-content:space-between;background:var(--redbg);
+  border:1px solid var(--redln);flex-wrap:wrap}
+#toView .tostep b{font-size:var(--f14)}
+#toView .tostep .s{color:var(--red)}
+#toView .tostep .tbtn{flex:0 0 auto}
+#toView .tochip,.tomodal .tochip{display:inline-block;padding:3px 9px;border-radius:20px;
+  font-size:var(--f11);white-space:nowrap;font-weight:700;flex:0 0 auto;
+  background:var(--soft);color:var(--mut)}
+#toView .tochip.ok,.tomodal .tochip.ok{background:var(--grnbg);color:var(--grn)}
+#toView .tochip.warn,.tomodal .tochip.warn{background:var(--ambbg);color:var(--amb)}
+#toView .tochip.bad,.tomodal .tochip.bad{background:var(--redbg);color:var(--red)}
+#toView .tochip.mut,.tomodal .tochip.mut{background:var(--soft);color:var(--mut)}
+#toView .tostats{display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));gap:12px;
+  margin:0 0 14px}
+#toView .tostats>div{border:1px solid var(--line);border-radius:11px;padding:13px 14px;
+  background:var(--card)}
+#toView .tostats b{display:block;font-size:var(--f28);line-height:1.15;font-weight:700;
+  letter-spacing:-.8px;font-variant-numeric:tabular-nums;white-space:nowrap}
+#toView .tostats b.bad{color:var(--red)}
+#toView .tostats b.ok{color:var(--grn)}
+#toView .tostats span{font-size:var(--f12);color:var(--mut);display:block;margin-top:2px}
+#toView .tocard .tostats{margin:12px 0 0}
+#toView .tochecks{margin-top:12px;border-top:1px solid var(--line)}
+#toView .tocheck{display:flex;gap:12px;align-items:center;justify-content:space-between;
+  padding:11px 0;border-bottom:1px solid var(--line)}
+#toView .tocheck .t{flex:1;font-size:var(--f13);line-height:1.4}
+#toView .tomarks{display:flex;gap:5px;flex:0 0 auto}
+#toView .tomarks .tbtn{width:42px;padding:0}
+#toView .tomarks .tbtn .lbl{display:none}
+#toView .tofoot{position:sticky;bottom:0;background:var(--card);padding:13px 15px;
+  border-top:1px solid var(--line);margin:0 -18px;z-index:3}
+#toView .tofoot .tbtn{width:100%;height:44px;font-size:var(--f14)}
+#toView .tailbox .ci{display:inline-block;padding:5px 10px;font-size:var(--f12);margin:0}
+#toView .tocombo{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);
+  display:flex;flex-direction:column;gap:10px}
+#toView .tocombl{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+#toView .tocombl input{width:18px;height:18px;margin-top:2px;flex:0 0 auto;accent-color:var(--red)}
+#toView .tocombl b{font-size:var(--f13)}
+#toView .tbchk{display:flex;gap:10px;align-items:flex-start;cursor:pointer;flex:1;min-width:0}
+#toView .tbchk input{width:18px;height:18px;margin-top:2px;flex:0 0 auto;accent-color:var(--red)}
+#toView .tocard.tbon{border-color:var(--red);background:var(--redbg)}
+#toView .tomonth{margin:0 0 12px}
+#toView .tomonthh{font-weight:700;font-size:var(--f14);padding:0 0 7px;display:flex;
+  justify-content:space-between;align-items:baseline;gap:10px}
+#toView .tomonthh .s{font-weight:400}
+#toView .todetail{margin:10px 0 2px;padding:10px 12px;background:var(--soft);border-radius:9px;
+  border:1px solid var(--line)}
+#toView .todrow{display:flex;gap:10px;align-items:center;justify-content:space-between;
+  padding:7px 0;border-bottom:1px solid var(--line)}
+#toView .todrow:last-child{border-bottom:none}
+#toView .tobar .tbtn.mon.go{background:var(--amb);border-color:var(--amb)}
+#toView .togrants{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+#toView .togrants .toli{padding:10px 0;border-bottom:1px solid var(--line)}
+#toView .tfstatic{font-size:var(--f13);padding:10px 0 0}
+#toView .cal{margin:0 0 14px}
+#toView .tocal-legend{font-size:var(--f12);color:var(--mut)}
+
+/* Окно формы раздела ТО — тот же узел, что и .mdl */
+.tomodal{position:fixed;inset:0;background:var(--ovl);z-index:60;display:flex;
+  align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto}
+.tomwin{background:var(--card);border:1px solid var(--line);border-radius:14px;width:100%;
+  max-width:720px;box-shadow:var(--sh3);overflow:hidden;margin:auto}
+.tomhead{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;
+  padding:16px 18px 13px;border-bottom:1px solid var(--line)}
+.tomhead b{font-size:var(--f15);font-weight:700;color:var(--ink)}
+.tomhead .s{font-size:var(--f12);color:var(--mut);line-height:1.5;margin-top:5px;max-width:540px}
+.tombody{padding:16px 18px 4px;max-height:62vh;overflow:auto}
+.tomfoot{display:flex;gap:9px;justify-content:flex-end;padding:13px 18px 16px;
+  border-top:1px solid var(--line);background:var(--soft);flex-wrap:wrap}
+.tfgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px 17px}
+.tfield.wide{grid-column:1/-1}
+.tflab{font-size:var(--f12);font-weight:600;color:var(--ink);margin-bottom:6px;
+  display:flex;align-items:center;gap:7px}
+.tflab i{font-style:normal;font-weight:500;font-size:var(--f11);color:var(--red)}
+.tfq{width:18px;height:18px;border-radius:50%;border:1px solid var(--line2);background:var(--card);
+  color:var(--mut);font-size:var(--f11);font-weight:700;cursor:pointer;line-height:1;padding:0;
+  flex:0 0 auto;font-family:inherit}
+.tfq:hover{border-color:var(--red);color:var(--red)}
+.tf{width:100%;height:40px;padding:0 12px;border:1px solid var(--line2);border-radius:8px;
+  font-size:var(--f13);background:var(--card);color:var(--ink);text-align:left!important;
+  font-family:inherit;outline:none}
+select.tf{cursor:pointer;padding-right:8px;min-width:0}
+/* Незаполненное поле: подсказка «сюда ещё не вводили», а не ошибка */
+.tf.empty{background:var(--todo);border-color:var(--todoln)}
+.tf.empty:focus{background:var(--card);border-color:var(--red)}
+.tf.empty::placeholder{color:var(--mut)}
+.tf:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--redbg)}
+.tf::placeholder{color:var(--dim)}
+.tfrow{display:flex;gap:8px}
+.tfrow .tf{flex:1}
+.tfnote{font-size:var(--f12);color:var(--mut);margin-top:6px;min-height:1px}
+.tfnote.ok{color:var(--grn);font-weight:600}
+.tfwarn{font-size:var(--f12);color:var(--amb);margin-top:6px}
+.tfchk{display:flex;align-items:center;gap:8px;height:40px;font-size:var(--f13);cursor:pointer}
+.tfchk input{width:18px;height:18px;accent-color:var(--red)}
+.tfmulti{display:flex;flex-direction:column;gap:2px;max-height:170px;overflow:auto;
+  border:1px solid var(--line2);border-radius:8px;padding:6px;background:var(--card)}
+.tfmulti label{display:flex;align-items:center;gap:9px;padding:8px;border-radius:7px;
+  font-size:var(--f13);cursor:pointer;color:var(--ink)}
+.tfmulti label:hover{background:var(--hover)}
+.tfmulti input{width:17px;height:17px;flex:0 0 auto;accent-color:var(--red)}
+.tfhint{margin:16px 0 4px;padding:0;font-size:var(--f13);line-height:1.5;color:var(--ink2);
+  max-height:0;overflow:hidden;transition:.15s}
+.tfhint.on{max-height:220px;padding:12px 14px;background:var(--soft);border-radius:9px;
+  border:1px solid var(--line)}
+.toaddr{border:1px solid var(--line2);border-radius:8px;margin-top:6px;max-height:200px;
+  overflow:auto;background:var(--card);box-shadow:var(--sh2)}
+.toaddr:empty{display:none}
+.toaddri{padding:11px 12px;font-size:var(--f13);cursor:pointer;color:var(--ink);
+  border-bottom:1px solid var(--line)}
+.toaddri:last-child{border-bottom:none}
+.toaddri:hover{background:var(--hover)}
+/* Пользователи и доступы */
+.uadm-block{opacity:.55}
+.uadm-note{font-size:var(--f12);color:var(--mut)}
+.uadm-ok{color:var(--grn);font-weight:600}
+.uadm-role{font-size:var(--f12);color:var(--mut)}
+.ent-f{display:flex;flex-direction:column;gap:5px;min-width:0}
+
+/* Клетка календаря не должна наследовать вид карточки: имена совпали */
+.calg .cd{border-top:none;border-left:none;border-radius:0}
+
+/* ══ ШИРИНА 1120 ═══════════════════════════════════════════════════════ */
+@media(max-width:1120px){
+  .g2{grid-template-columns:1fr}
+  .fgrid,.tfgrid{grid-template-columns:1fr 1fr}
+}
+
+/* ══ ТЕЛЕФОН И ПЛАНШЕТ — до 900 ════════════════════════════════════════
+   И14 · горизонтальной прокрутки нет нигде.
+   И19 · высота под палец от 40px. ── */
+@media(max-width:900px){
+  /* Меню выезжает поверх */
+  .side{position:fixed;left:0;top:0;bottom:0;z-index:46;transform:translateX(-100%);
+    transition:transform .22s;height:100dvh;width:252px;flex-basis:252px}
+  .side.on{transform:none;box-shadow:0 0 40px rgba(0,0,0,.34)}
+  .burger{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+    border-radius:9px;border:none;background:none;color:var(--ink);cursor:pointer;flex:0 0 auto}
+  .burger:hover{background:var(--hover)}
+  .logo{display:flex;align-items:center;gap:7px;cursor:pointer;flex:0 0 auto}
+  .logo svg{height:20px;width:auto;stroke:none}
+  .logo svg rect{fill:var(--red)}
+  .logo b{font-size:17px;font-weight:700;letter-spacing:-.3px}
+  .top{padding:0 10px;gap:5px}
+  .top .obj{display:none}
+  .src{display:none}
+  .fnt{display:none}
+  .usr .nm{display:none}
+  .usr{padding-left:6px;gap:0;border-left:none}
+  .av{width:30px;height:30px}
+  .ib{width:34px;height:34px}
+  /* И17 · поиск в шапке открывается кнопкой */
+  .sr{display:none;position:absolute;left:8px;right:8px;top:9px;max-width:none;z-index:5}
+  .sr.on{display:block}
+  .main{padding:12px}
+
+  /* И18 · кнопки действий уходят строкой под заголовок */
+  .ph{gap:10px}
+  .ph h1{font-size:19px}
+  .ph>div:first-child,.ph .acts{flex:1 1 100%;margin-left:0}
+  .ph .acts{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* И5 · кнопка в шапке раздела, карточки и во вкладках сжимается до иконки.
+     Правило структурное, привязано к контейнеру (И5а). Внутри содержимого
+     подписи остаются: там контекста нет. */
+  .ph .btn .lbl,.ph .bt .lbl,.cdh .btn .lbl,.cdh .bt .lbl,
+  #toView .tobar .tbtn .lbl,#shiftView .bar .btn .lbl,.dl .tabs .tab .lbl{display:none}
+  .ph .btn,.ph .bt,.cdh .btn,.cdh .bt,#toView .tobar .tbtn,#shiftView .bar .btn,
+  .btn.io,.bt.io,.tbtn.io{width:40px;height:40px;padding:0;justify-content:center;flex:0 0 auto}
+  .cdh .btn.sm,.cdh .bt.s{width:36px;height:36px}
+  .dl .tabs .tab{width:42px;padding:0;justify-content:center}
+  .dl .tabs .tab.on{width:auto;padding:0 14px}
+  .dl .tabs .tab.on .lbl{display:inline}
+  /* Вкладки раздела: у выбранной подпись остаётся — иначе непонятно, где стоишь */
+  .stab{width:42px;padding:0;justify-content:center}
+  .stab .lbl{display:none}
+  .stab.on{width:auto;padding:0 14px}
+  .stab.on .lbl{display:inline}
+  .stabs{gap:6px;margin-bottom:12px}
+  /* Галочка выбора строки — 15 px мимо пальца. Крупнее только на телефоне,
+     и не больше 18: крупнее она спорит с заголовком карточки. */
+  input[type=checkbox].pick,.pickgap,.thead input[type=checkbox],
+  .row input[type=checkbox],.purtbl input[type=checkbox]{width:18px;height:18px}
+
+  /* И2 · на телефоне основная 40, малая 34 */
+  .btn,.bt,.tbtn{height:40px}
+  .btn.sm,.bt.s,.tbtn.sm{height:34px}
+  .tbtn.x{width:40px}
+  #toView .tomarks .tbtn{width:46px}
+
+  /* И15 · содержимое ячейки складывается столбиком */
+  .kp{gap:9px}
+  .k{padding:12px}
+  .k .r{flex-direction:column;gap:7px}
+  .k .ic{width:30px;height:30px}
+  .k .lb{font-size:var(--f12);line-height:1.3}
+  .k .vl{font-size:clamp(21px,6.4vw,28px);letter-spacing:-.6px}
+  .k svg.sp{height:26px}
+  #toView .tostats b{font-size:clamp(21px,6.4vw,28px)}
+
+  /* И16 · длинная запись сворачивается: видно название и стрелку */
+  .xscroll table,.xscroll thead,.xscroll tbody,.xscroll tr{display:block;width:100%}
+  .xscroll thead{display:none}
+  .xscroll tbody tr{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    margin-bottom:8px;position:relative;overflow:hidden}
+  .xscroll tbody td{border:none;display:grid;grid-template-columns:minmax(78px,auto) 1fr;
+    gap:12px;align-items:baseline;padding:7px 12px;text-align:right}
+  .xscroll tbody td::before{content:attr(data-l);color:var(--mut);font-size:var(--f12);
+    text-align:left;white-space:nowrap}
+  .xscroll tbody td>*{grid-column:2;justify-self:end}
+  .xscroll tbody td>.sub{margin-top:0}
+  .xscroll tbody td:first-child{display:block;text-align:left;padding:12px 38px 12px 12px;
+    cursor:pointer}
+  .xscroll tbody td:first-child::before{display:none}
+  .xscroll tbody td:first-child .sub{display:block;margin-top:2px}
+  .xscroll tbody td:first-child::after{content:"";position:absolute;right:15px;top:18px;
+    width:7px;height:7px;border-right:2px solid var(--dim);border-bottom:2px solid var(--dim);
+    transform:rotate(45deg);transition:transform .18s}
+  .xscroll tbody tr.op td:first-child{border-bottom:1px solid var(--line)}
+  .xscroll tbody tr.op td:first-child::after{transform:rotate(-135deg);top:21px}
+  .xscroll tbody tr td:not(:first-child){display:none}
+  .xscroll tbody tr.op td:not(:first-child){display:grid}
+  .xscroll tbody tr:hover td{background:transparent}
+  .xscroll tbody tr:active td:first-child{background:var(--hover)}
+
+  /* ── Строка сметы на телефоне ──────────────────────────────────────
+     Было: восемь полей столбиком, одна позиция занимала весь экран, и
+     чтобы увидеть вторую, надо было листать. Стало: служебное — первой
+     строкой, название — второй, поля — по два в ряд. Высота вдвое ниже,
+     а листать теперь можно осмысленно. Горизонтальной прокрутки нет:
+     все колонки minmax(0,1fr). */
+  /* Строка сметы складывается раньше — см. блок «до 1180» ниже */
+
+  /* Подраздел складывается в том же блоке «до 1180» */
+
+  .it{padding:10px 12px}
+  .pd,.cdh{padding-left:12px;padding-right:12px}
+  .fgrid,.tfgrid{grid-template-columns:1fr}
+  .tombody,.mbody{max-height:none}
+  .mdl,.tomodal{padding:12px 8px}
+  .mfoot,.tomfoot{justify-content:stretch}
+  .mfoot .btn,.mfoot .bt,.tomfoot .tbtn{flex:1 1 auto}
+  #shiftView .bar,#toView .tobar{margin-left:-12px;margin-right:-12px;padding-left:12px;padding-right:12px}
+  #toView .tofoot{margin:0 -12px}
+  .calg .cd{min-height:72px;padding:3px}
+  .ci{font-size:10px;padding:2px 4px}
+  .calh span{font-size:10px;padding:6px 2px}
+  #dealView .dl .grid,#dealView .dl .res{grid-template-columns:1fr}
+  .dl table.dt{font-size:var(--f12)}
+  .speccard{flex-wrap:wrap;gap:4px}
+  .speccard .s{flex:1 1 100%;text-align:left}
+  .disc{width:40px;height:40px}
+  .prjkids{padding:2px 6px 9px 14px}
+  .prjkids:before{display:none}
+  .prjnote{padding-left:14px}
+  .pnm{flex:1 1 100%}
+  #crmView .speccard,#trackView .speccard{flex-wrap:nowrap;align-items:flex-start}
+  #crmView .pnm,#trackView .pnm{flex:1 1 0}
+  #crmView .pnm .s,#trackView .pnm .s{white-space:normal}
+  #crmView .speccard>.crmr{flex-direction:column;align-items:flex-end;gap:4px}
+  #trackView .crmr{max-width:50%}
+  #trackView .crmr .s{white-space:normal;text-align:right}
+}
+
+
+/* ══ ПЕЧАТЬ ════════════════════════════════════════════════════════════ */
+@media print{
+  .side,.top,.bar,.tobar,.tofoot,.toast,.load,.mdl,.tomodal{display:none!important}
+  .main{padding:0}
+  body{background:#fff}
+}
+
+/* Кнопка поиска в шапке — только на телефоне (И17) */
+.srb{display:none}
+@media(max-width:900px){.srb{display:inline-flex}}
+.tfq svg.i{width:12px;height:12px;min-width:12px;min-height:12px;stroke-width:2.2}
+.drag svg.i,.mn svg.i,.xrow svg.i{width:16px;height:16px;min-width:16px;min-height:16px}
+.dl .addrow{display:flex;align-items:center;justify-content:center;gap:7px}
+label.btn,label.tbtn{cursor:pointer}
+a.tbtn{text-decoration:none}
+
+/* На компьютере меню стоит на месте, затемнять под ним нечего.
+   Без этого нажатие на профиль в шапке гасило весь экран. */
+@media(min-width:901px){.ov,.ov.on{display:none}}
+
+/* ══ РОЛЬ В ШАПКЕ ══════════════════════════════════════════════════════
+   Роль показывается один раз — под фамилией. В боковом меню она стояла
+   второй строкой и повторяла то же самое. Список ролей — инструмент
+   администратора: остальным код удаляет его из разметки. */
+.rolemenu{position:absolute;right:0;top:46px;min-width:206px;background:var(--card);
+  border:1px solid var(--line);border-radius:11px;box-shadow:var(--sh2);
+  padding:6px 0;z-index:60}
+.rolemenu .nav{margin:1px 6px;font-size:var(--f13)}
+.usr .chv{transition:transform .18s}
+#roleBadge{display:none}            /* дубль роли рядом с названием объекта */
+@media(max-width:900px){
+  .usr .nm{display:none}
+  .usr .chv{display:none}
+  .rolemenu{position:fixed;right:8px;top:56px;left:auto;min-width:212px}
+}
+
+/* ══ ОПОВЕЩЕНИЯ В ШАПКЕ ════════════════════════════════════════════════
+   Колокольчик — один элемент рядом с аватаркой, а не новая полоса кнопок
+   (#247). Счётчик и список считают одно и то же — непрочитанные (#256).
+   Список выпадает так же, как список ролей: те же рамка, тень и радиус,
+   на телефоне так же прижимается к краям экрана. */
+.bell{position:relative;flex:0 0 auto}
+.bell .bn{position:absolute;top:1px;right:1px;min-width:16px;height:16px;padding:0 4px;
+  border-radius:20px;background:var(--red);color:#fff;font-size:var(--f11);font-weight:700;
+  line-height:16px;text-align:center;pointer-events:none}
+.bellmenu{position:absolute;right:0;top:46px;width:334px;max-height:min(70vh,460px);
+  overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:11px;
+  box-shadow:var(--sh2);z-index:60}
+.bellmenu .bh{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;
+  gap:8px;padding:9px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+.bellmenu .bh b{font-size:var(--f13)}
+.bellmenu .bi{display:block;width:100%;text-align:left;padding:10px 12px;border:none;
+  border-bottom:1px solid var(--line);background:none;font-family:inherit;cursor:pointer}
+.bellmenu .bi:last-child{border-bottom:none}
+.bellmenu .bi:hover{background:var(--hover)}
+.bellmenu .bi .t{font-size:var(--f13);font-weight:600;color:var(--ink)}
+.bellmenu .bi .d{font-size:var(--f12);color:var(--ink2);margin-top:2px}
+.bellmenu .bi .w{font-size:var(--f11);color:var(--mut);margin-top:3px}
+/* Прочитанное не исчезает — гаснет: список остаётся историей, а внимание
+   забирает только то, чего ещё не видели. */
+.bellmenu .bi.read .t{font-weight:500;color:var(--mut)}
+.bellmenu .bi.read .d{color:var(--mut)}
+.bellmenu .emp{padding:20px 12px;text-align:center;font-size:var(--f12);color:var(--mut)}
+@media(max-width:900px){
+  .bellmenu{position:fixed;left:8px;right:8px;top:56px;width:auto}
+}
+
+/* ══ КНОПКИ В ПОЛОСАХ ДЕЙСТВИЙ — ТОЛЬКО ИКОНКА ═════════════════════════
+   На любой ширине, а не только на телефоне. Рядом стоит заголовок раздела
+   или название сметы — он и объясняет, куда нажимаешь; подпись на кнопке
+   после этого лишняя (И0, И7а). Полное название лежит в title: его читает
+   и подсказка при наведении, и экранный диктор.
+   Подписи остаются там, где контекста нет: в полосе выбора, в пустом
+   состоянии и в подвале окна. */
+.head .bar>.btn,
+.ph .acts>.btn,.ph .acts>.bt,
+.cdh>.btn,.cdh>.bt{width:36px;padding:0;justify-content:center;flex:0 0 auto}
+.head .bar>.btn>.lbl,
+.ph .acts>.btn>.lbl,.ph .acts>.bt>.lbl,
+.cdh>.btn>.lbl,.cdh>.bt>.lbl{display:none}
+.head .bar>.btn.sm,.cdh>.btn.sm,.cdh>.bt.s{width:32px}
+/* Исключение — главное действие полосы. Значком без подписи оно стояло
+   в ряду одинаковых квадратов у правого края и не читалось как главное;
+   подпись остаётся у него одного, ровно поэтому она и работает. */
+.head .bar>.btn.primary{width:auto;padding:0 13px}
+.head .bar>.btn.primary>.lbl{display:inline}
+@media(max-width:900px){
+  .head .bar>.btn,
+  .ph .acts>.btn,.ph .acts>.bt{width:40px}
+  .head .bar>.btn.sm{width:34px}
+  .head .bar>.btn.primary{width:auto}
+  .cdh>.btn,.cdh>.bt{width:40px}
+  .cdh>.btn.sm,.cdh>.bt.s{width:36px}
+}
+/* На телефоне подпись главного действия уезжает: без неё ряд помещается
+   в два ряда вместо трёх, а главным оно остаётся заливкой. */
+@media(max-width:560px){
+  .head .bar>.btn.primary{width:34px;padding:0}
+  .head .bar>.btn.primary>.lbl{display:none}
+}
+
+/* ══ СТРОКА СМЕТЫ: КОГДА ТАБЛИЦА ПЕРЕСТАЁТ ПОМЕЩАТЬСЯ ══════════════════
+   Двенадцать колонок сметы требуют около 690 пикселей на одни только
+   фиксированные поля. При боковом меню в 214 и полях страницы в 36 это
+   значит, что таблицей она остаётся начиная с 1180 пикселей окна — не
+   с 900. Раньше порог стоял на 900, и в окне шириной 1000 колонка
+   названия схлопывалась в ноль: заголовки налезали друг на друга,
+   а название печаталось по одной букве в строку.
+   Ниже 1180 позиция складывается: служебное — первой строкой, название —
+   второй, поля — по два в ряд. ── */
+.footm{display:none}
+@media(max-width:1180px){
+  .thead,.foot{display:none}
+  /* Раскладка потоком, а не сеткой. Сетка с колонками 20/20/1fr/1fr давала
+     полю ширину в 48 пикселей — подпись налезала на значение. Здесь каждое
+     поле занимает ровно половину строки, подпись стоит над значением
+     и не может с ним столкнуться ни при какой ширине. */
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:0 8px;padding:9px 11px}
+  .row>*:nth-child(1){order:1;flex:0 0 auto}
+  .row>*:nth-child(2){order:2;flex:0 0 auto}
+  .row>*:nth-child(3){order:3;flex:0 1 auto}
+  .row>.mn,.row>div:last-child{order:4;flex:0 0 auto;margin-left:auto}
+  .row>.cell.namecell{order:5;flex:1 1 100%;display:flex;flex-wrap:wrap;
+       border:none;padding:4px 0 2px}
+  .row>.cell:not(.namecell){order:6;flex:1 1 calc(50% - 4px);min-width:0;display:block;
+       padding:6px 0 2px;border-top:1px solid var(--line)}
+  .row .cell label{display:block;font-size:var(--f11);color:var(--mut);
+       margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .cell b{display:block;white-space:nowrap;font-variant-numeric:tabular-nums;
+       font-size:var(--f14);padding:4px 0 5px}
+  input.f{width:100%;height:32px}
+
+  /* И16 · длинная запись сворачивается: видно название и стрелку.
+     Позиция сметы — восемь полей и строка себестоимости; развёрнутыми
+     они занимают экран целиком, и список перестаёт быть списком.
+     Свёрнутая показывает то, по чему позицию узнают: название, артикул
+     и магазин. Разворачивается нажатием на строку под названием или на
+     стрелку — само название остаётся полем для правки. */
+  .rowwrap>.row>.cell:not(.namecell){display:none}
+  .rowwrap.op>.row>.cell:not(.namecell){display:block}
+  .row>.cell.namecell{position:relative;padding-right:30px;cursor:pointer;
+       -webkit-tap-highlight-color:transparent}
+  .row>.cell.namecell::after{content:"";position:absolute;right:6px;top:10px;
+       width:8px;height:8px;border-right:2px solid var(--dim);border-bottom:2px solid var(--dim);
+       transform:rotate(45deg);transition:transform .18s}
+  .rowwrap.op .row>.cell.namecell::after{transform:rotate(-135deg);top:13px}
+  .rowwrap.op{border-color:var(--line2)}
+  .rowwrap.op>.row{padding-bottom:4px}
+  /* Свёрнутой строке заголовок «Всего» не нужен — сумма видна в подытоге
+     подраздела и в итогах сметы. Разворачивают ради правки, а не ради чтения. */
+  .row>.cell.namecell .nmField{cursor:text}
+
+  /* Подраздел: название на всю ширину, подытог под ним — он не помещался
+     в строку и обрезался на слове «об. …» */
+  .secrow{flex-wrap:wrap;gap:6px 10px;padding:10px 12px}
+  .secttl{flex:1 1 100%;font-size:var(--f13)}
+  .secsum{flex:1 1 auto;white-space:normal;overflow:visible;text-align:left;
+       font-size:var(--f12);line-height:1.4}
+  /* Расшифровка «(об. … · монт. …)» на телефоне съедала две строки заголовка.
+     Она есть в итогах внизу сметы — здесь достаточно подытога и маржи. */
+  .secsum .sub{display:none}
+  .secrow .mn{margin-left:auto;flex:0 0 auto}
+  .seckind{flex:0 0 auto}
+  .footm{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;
+    font-weight:700;display:flex;justify-content:space-between;margin-top:4px;
+    font-variant-numeric:tabular-nums}
+}
+
+/* ══ РАСЧЁТ СДЕЛКИ НА УЗКОМ ЭКРАНЕ ═════════════════════════════════════
+   Таблицы оборудования, подрядчиков и прочих расходов — четыре колонки
+   с полями ввода. Ниже 760 они не помещаются, и строка превращается
+   в карточку: подпись поля слева, значение под ней. Шапка таблицы там
+   не нужна — её роль берут на себя подписи. */
+@media(max-width:760px){
+  .dl table.dt,.dl table.dt tbody,.dl table.dt tr,.dl table.dt td,.dl table.dt th{display:block;width:100%}
+  .dl table.dt{border:none;background:none}
+  .dl table.dt tr:first-child{display:none}
+  .dl table.dt tr{border:1px solid var(--line);border-radius:9px;background:var(--card);
+    margin-bottom:8px;padding:8px 10px 10px;position:relative}
+  .dl table.dt td{border:none;padding:5px 0;width:auto!important}
+  .dl table.dt td::before{content:attr(data-l);display:block;font-size:var(--f11);
+    color:var(--mut);margin-bottom:3px}
+  .dl table.dt td.xrow{position:absolute;right:4px;top:4px;width:34px!important;height:34px;
+    display:flex;align-items:center;justify-content:center;padding:0}
+  .dl table.dt td.xrow::before{display:none}
+  .dl table.dt input,.dl table.dt select{border-color:var(--line2);background:var(--card);
+    padding:8px 9px}
+  .dl .bar .gi{max-width:none!important;flex:1 1 100%}
+}
+
+/* ══ НЕЗАПОЛНЕННОЕ ПОЛЕ ════════════════════════════════════════════════
+   Класс .need вешает слой интерфейса на пустые поля форм. Цвет тёплый
+   и слабый: он говорит «сюда ещё не вводили», а не «здесь ошибка».
+   При наведении и в фокусе поле возвращается к обычному виду — чтобы
+   подсказка не мешала печатать. */
+.need{background:var(--todo)!important;border-color:var(--todoln)!important}
+.need:focus{background:var(--card)!important;border-color:var(--red)!important}
+.need::placeholder{color:var(--mut)}
+
+/* Пояснение под полем. Мелкое и второстепенное: его читают один раз,
+   когда впервые видят форму, а дальше оно не должно мешать. */
+.fhint{display:block;font-size:var(--f11);color:var(--mut);line-height:1.4;margin-top:1px}
+.dl label.fld{gap:4px}
+.dl label.fld .fhint{margin-top:2px}
+
+/* ══ ЗАКУПКИ ═══════════════════════════════════════════════════════════ */
+/* Разбор документа. Шесть колонок с полями и выпадающими списками —
+   на компьютере таблица, ниже 900 каждая строка становится карточкой. */
+.purtbl{width:100%;border-collapse:collapse}
+.purtbl th{font-size:var(--f12);color:var(--mut);font-weight:500;text-align:left;padding:9px 12px;
+  background:var(--soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  white-space:nowrap}
+.purtbl td{padding:7px 12px;border-bottom:1px solid var(--line);vertical-align:middle;
+  font-size:var(--f13)}
+.purtbl tr:last-child td{border-bottom:none}
+.purtbl tr.suspect td{background:var(--ambbg)}
+.purtbl td.inc{width:34px}
+.purtbl input[type=checkbox]{width:15px;height:15px;accent-color:var(--red);cursor:pointer}
+.purtbl select{height:32px;min-width:0;max-width:280px;font-size:var(--f12);padding:0 8px}
+.purtbl input.f{height:30px}
+/* Подбор названия по каталогу: та же подсказка .drop, что в смете, только
+   якорем служит ячейка, а не полоса поиска. */
+.purname{position:relative}
+.purname .drop{top:32px;min-width:260px}
+/* Связь со строкой сметы: строка сметы, единиц по смете, вид связи.
+   Связей у позиции может быть несколько — каждая своей строкой. */
+.purlink{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:5px}
+.purlink select{max-width:220px}
+
+/* Документ в истории закупок */
+.purdoc{padding:12px 15px;border-bottom:1px solid var(--line)}
+.purdoc:last-child{border-bottom:none}
+.purdoc:hover{background:var(--hover)}
+.purdh{display:flex;justify-content:space-between;gap:9px;flex-wrap:wrap;align-items:baseline}
+.purdh b{font-weight:600;font-size:var(--f14)}
+.purdoc details{margin-top:6px}
+.purdoc summary{cursor:pointer;color:var(--blu);font-size:var(--f12);font-weight:500;
+  list-style:none}
+.purdoc summary::-webkit-details-marker{display:none}
+.purdoc summary::before{content:"▸ ";color:var(--dim)}
+.purdoc details[open] summary::before{content:"▾ "}
+
+@media(max-width:900px){
+  .purtbl,.purtbl tbody,.purtbl tr,.purtbl td,.purtbl th{display:block;width:100%}
+  .purtbl tr:first-child{display:none}
+  .purtbl tr{border:1px solid var(--line);border-radius:9px;margin:0 12px 8px;
+    padding:9px 34px 10px 11px;background:var(--card);position:relative}
+  .purtbl tr.suspect{border-color:var(--amb)}
+  .purtbl tr.suspect td{background:none}
+  .purtbl td{border:none;padding:5px 0}
+  .purtbl td::before{content:attr(data-l);display:block;font-size:var(--f11);
+    color:var(--mut);margin-bottom:3px}
+  .purtbl td.inc{position:absolute;right:9px;top:9px;width:auto;padding:0}
+  .purtbl td.inc::before{display:none}
+  .purtbl input.f,.purtbl select{width:100%!important;max-width:none!important}
+  .purlink select{flex:1 1 100%}
+}
+
+/* ══ ЭКРАН СМЕНЫ ═══════════════════════════════════════════════════════
+   Две карточки в одной сетке: слева работа прямо сейчас, справа месяц.
+   Раньше это были два разных экрана, и чтобы понять «сколько уже за
+   месяц», приходилось уходить со смены и возвращаться обратно. */
+.shgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  align-items:start}
+
+/* Пары «подпись — значение». Двухколоночная сетка вместо таблицы:
+   читается так же, а на узком экране не ломается (И15). */
+.prmg{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;color:var(--mut);
+  font-size:var(--f13)}
+.prmg .v{color:var(--ink);font-variant-numeric:tabular-nums;min-width:0;
+  overflow:hidden;text-overflow:ellipsis}
+
+/* Выноска-правило. Не ошибка и не предупреждение: так устроена система,
+   и человеку полезно это знать в момент, когда он на неё смотрит. */
+.callout{border-left:3px solid var(--red);background:var(--soft);
+  border-radius:0 9px 9px 0;margin:0 15px 15px;padding:10px 12px;
+  color:var(--mut);font-size:var(--f12);line-height:1.5}
+
+/* Квадрат дня остался классом .hd: под ним же в «Истории правок» набрана
+   ячейка даты, и общее правило задаёт ей форму. */
+.hd{aspect-ratio:1;border-radius:5px;display:flex;align-items:center;justify-content:center;
+  font-size:var(--f11);background:var(--soft);color:var(--dim);
+  font-variant-numeric:tabular-nums;cursor:default}
+
+/* Нажатая кнопка-переключатель: «Отметить объём» остаётся вдавленной,
+   пока список объёмов открыт. */
+.btn.io.on{background:var(--sel);border-color:var(--sel);color:var(--selink)}
+
+/* Мониторинг — будущая диспетчерская, поэтому и вкладка у него другого цвета */
+.stab.mon.on{background:var(--amb);border-color:var(--amb)}
+
+/* Показатель расчёта: подпись, число, расчётная расшифровка и строка
+   «что это». Последняя нужна: двенадцать чисел подряд без объяснения
+   читаются как стена, и непонятно, на какое смотреть. */
+.dl .m .exp{font-size:var(--f11);color:var(--mut);line-height:1.4;margin-top:6px;
+  padding-top:6px;border-top:1px solid var(--line)}
+.dl .m.key .exp{border-top-color:var(--redln)}
+.dl .est{padding:26px 20px}
+.dl .est svg.i{margin-bottom:8px}
+/* Пока стоимость контракта не заполнена, показатели заменяются объяснением */
+#dealView.nodata #dlRes,#dealView.nodata #dlRes2{display:none}
+#dealView:not(.nodata) .nodatabox{display:none}
+
+/* ── Узлы, оставшиеся без стиля после разбора ───────────────────────────
+   Найдены сверкой: класс есть в разметке скриптов, правила в стилях нет.
+   До этого они держались на инлайновых атрибутах и выглядели чужеродно. */
+
+/* Поля формы выдачи доступа в разделе ТО */
+#toView .tofields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px 14px}
+#toView .tofield{display:flex;flex-direction:column;gap:5px;min-width:0}
+#toView .tofield>span{font-size:var(--f12);color:var(--mut)}
+#toView .tofield .f,#toView .tofield select,#toView .tofield input{height:38px;
+  border:1px solid var(--line2);border-radius:8px;background:var(--card);color:var(--ink);
+  font-size:var(--f13);font-family:inherit;padding:0 11px;width:100%;text-align:left}
+#toView .tofield .f:focus,#toView .tofield select:focus{outline:none;border-color:var(--red)}
+
+/* Крупные показатели кабинета заказчика */
+#toView .tostats.big b{font-size:clamp(23px,5vw,34px)}
+
+/* Состояние объекта под мониторингом (#445): одно слово, цвет несёт вся
+   карточка. У нормы заливки нет; устаревшие данные — пунктир на подложке,
+   ни одного зелёного элемента. */
+#toView .tocard.mon .monw{font-size:var(--f15);font-weight:700;margin:0 0 4px}
+#toView .tocard.mon.bad{background:var(--redbg);border-color:var(--redln)}
+#toView .tocard.mon.bad .monw,#toView .tocard.mon .monfire{color:var(--red)}
+#toView .tocard.mon.warn{background:var(--ambbg);border-color:var(--amb)}
+#toView .tocard.mon.warn .monw{color:var(--amb)}
+#toView .tocard.mon.stale{background:var(--soft);border-style:dashed;border-color:var(--line2)}
+#toView .tocard.mon.stale .monw{color:var(--mut)}
+#toView .tocard.mon .monfire{margin-top:8px;font-weight:700}
+#toView .tocard.mon .tolist{margin:10px 0 0}
+/* Живой журнал (#454): событие — отдельная строка, вид — полосой слева и цветом
+   метки, чтобы строки не сливались в сплошной белый текст. */
+#toView .evlist{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--card);margin:0 0 10px}
+#toView .evrow{display:flex;align-items:center;gap:8px;min-height:40px;padding:4px 10px 4px 12px;
+  border-left:3px solid var(--line2);border-bottom:1px solid var(--line);font-size:var(--f13)}
+#toView .evrow:last-child{border-bottom:none}
+#toView .evrow.crit{border-left-color:var(--red);background:var(--redbg)}
+#toView .evrow.warn{border-left-color:var(--amb)}
+#toView .evrow.svc{color:var(--mut)}
+#toView .evrow .t{color:var(--mut);font-size:var(--f12);white-space:nowrap}
+#toView .evrow .ek{font-size:var(--f11);font-weight:700;white-space:nowrap}
+#toView .evrow.crit .ek{color:var(--red)}
+#toView .evrow.warn .ek{color:var(--amb)}
+#toView .evrow .x{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#toView .evrow.grp .x{font-weight:600}
+#toView .evrow .tbtn{flex:0 0 auto;width:32px;height:32px;padding:0}
+#toView .evmore{padding:8px 12px;border-bottom:1px solid var(--line);background:var(--soft)}
+/* Состояние объекта одной строкой: слово своим цветом, у нормы — обычным */
+#toView .monline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+#toView .monline b{font-size:var(--f15)}
+#toView .monline.bad b{color:var(--red)}
+#toView .monline.warn b{color:var(--amb)}
+#toView .monline.stale b{color:var(--mut)}
+/* Свёрнутые служебные события журнала: тише сигналов, раскрываются «Все» */
+#toView .toli.jrgrp{color:var(--mut)}
+
+/* Общий чат отдела ТО (#548): лента идёт потоком страницы, поле ввода прилипает
+   к низу экрана, на телефоне — над нижним меню. Макет «Обслуживание», ?board=548. */
+#toView .tchat{max-width:760px;display:flex;flex-direction:column}
+#toView .tcfeed{display:flex;flex-direction:column;padding:0 0 12px}
+#toView .tcmore{align-self:center;margin:4px 0}
+#toView .tcday{display:flex;justify-content:center;margin:14px 0 6px}
+#toView .tcday .ch{background:var(--card);border:1px solid var(--line)}
+#toView .tcnew{display:flex;align-items:center;gap:8px;margin:12px 0 4px;color:var(--red);font-size:var(--f11);font-weight:600}
+#toView .tcnew::before,#toView .tcnew::after{content:"";flex:1;height:1px;background:var(--redln)}
+#toView .tcm{display:flex;align-items:center;gap:6px;max-width:min(80%,540px);margin-top:8px;align-self:flex-start}
+#toView .tcm.cont{margin-top:3px}
+#toView .tcm.own{align-self:flex-end;flex-direction:row-reverse}
+#toView .tcb{background:var(--card);border:1px solid var(--line);border-radius:var(--rc);padding:7px 11px 6px;min-width:0;
+  font-size:var(--f14);line-height:1.45;color:var(--ink);cursor:pointer;-webkit-user-select:text;user-select:text}
+#toView .tcm.own .tcb{background:var(--msgown);border-color:var(--msgown)}
+#toView .tcm.sel .tcb{border-color:var(--mut)}
+#toView .tca{font-size:var(--f12);font-weight:600;color:var(--ink2);margin:0 0 2px}
+#toView .tct{white-space:pre-wrap;overflow-wrap:anywhere;text-wrap:pretty}
+#toView .tctm{float:right;margin:6px 0 -3px 10px;font-size:var(--f11);line-height:1.3;color:var(--mut)}
+#toView .tcph{width:min(240px,60vw);aspect-ratio:4/3;border-radius:var(--rb);background:var(--soft);color:var(--mut);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;margin:2px -6px 2px}
+#toView .tcph svg.i{width:26px;height:26px}
+#toView .tcph img{width:100%;height:100%;object-fit:cover;display:block}
+#toView .tcph.up{opacity:.5}
+#toView .tcdel{visibility:hidden}
+#toView .tcm.sel .tcdel{visibility:visible}
+@media(hover:hover){#toView .tcm:hover .tcdel{visibility:visible}}
+#toView .tcerr{align-self:flex-end;display:flex;align-items:center;gap:4px;font-size:var(--f11);color:var(--amb);margin:2px 0 0}
+#toView .tcerr svg.i{width:14px;height:14px;min-width:14px;min-height:14px}
+#toView .tcerr .tbtn{color:var(--amb)}
+#toView .tcin{position:sticky;bottom:0;z-index:3;display:flex;align-items:flex-end;gap:6px;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--rc);padding:8px}
+#toView .tcin .tbtn{width:40px;height:40px;padding:0;justify-content:center;flex:0 0 auto;cursor:pointer}
+#toView .tcta{flex:1;min-width:0;min-height:40px;max-height:124px;resize:none;border:1px solid var(--line2);border-radius:var(--rb);
+  background:var(--card);color:var(--ink);font:inherit;font-size:var(--f15);line-height:1.4;padding:9px 12px;display:block}
+#toView .tcta:focus{outline:none;border-color:var(--mut)}
+#toView .tcbar{justify-content:flex-start;align-items:center;gap:8px}
+#toView .tcbar h2{margin:0}
+#toView .tcgo{position:relative}
+#toView .tcgo .ch,#toView .stab .ch{padding:1px 6px;min-width:18px;justify-content:center}
+#toView .tcgo .ch{position:absolute;top:-7px;right:-7px}
+#toView .stab[data-t="chat"]{position:relative}
+#toView [data-tcn][hidden]{display:none}
+/* Поле меньше 16 px iPhone при фокусе увеличивает страницу — на сенсорном экране кегль не ниже 16 */
+@media(pointer:coarse){#toView .tcta{font-size:max(16px,var(--f15))}}
+@media(max-width:900px){
+  #toView .tcin{margin:0 -18px;border-radius:0;border-width:1px 0 0}
+  html:has(.tabnav:not(:empty)) #toView .tcin{bottom:calc(63px + env(safe-area-inset-bottom))}
+  #toView .tcm{max-width:86%}
+  #toView .stab .ch{position:absolute;top:-7px;right:-7px}
+}
+
+/* Маржа рядом с подытогом подраздела сметы */
+.secmargin{display:inline-block;font-size:var(--f11);letter-spacing:0}
+@media(max-width:1180px){.secmargin{margin-left:0!important}}
+
+/* ══ СВЁРНУТОЕ МЕНЮ НА КОМПЬЮТЕРЕ ══════════════════════════════════════
+   Полоска со значками вместо колонки в 214 пикселей. Нужна тем, кто
+   работает в смете: там двенадцать колонок, и каждый лишний пиксель
+   ширины виден. Состояние запоминается на устройстве.
+   На телефоне не применяется — там меню и так выезжает поверх. */
+@media(min-width:901px){
+  html[data-nav="min"] .side{width:58px;flex:0 0 58px}
+  html[data-nav="min"] .side .t,
+  html[data-nav="min"] .side .b,
+  html[data-nav="min"] .side .sn,
+  html[data-nav="min"] .side .chv{display:none}
+  html[data-nav="min"] .side .dh{font-size:0;padding:9px 14px 5px}
+  html[data-nav="min"] .side .dh::after{content:"";display:block;height:1px;background:var(--nvln)}
+  html[data-nav="min"] .side .dh.gtog{display:none}
+  html[data-nav="min"] .soon{display:none}
+  html[data-nav="min"] .brand{justify-content:center;padding:17px 0 15px;font-size:0;gap:0}
+  html[data-nav="min"] .nav{justify-content:center;padding:9px 0;margin:1px 6px}
+  html[data-nav="min"] .nav .ic{margin:0}
+  /* Бургер в шапке сворачивает и разворачивает — привычное место для этого */
+  .burger{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;
+    border-radius:9px;border:none;background:none;color:var(--mut);cursor:pointer;flex:0 0 auto}
+  .burger:hover{background:var(--hover);color:var(--ink)}
+  .burger:active{box-shadow:inset 0 2px 4px rgba(0,0,0,.16);transform:translateY(1px)}
+}
+
+/* ══ НИЖНЕЕ МЕНЮ ТЕЛЕФОНА ═════════════════════════════════════════════
+   Главные разделы под большим пальцем, «+» посередине. Пункты из ряда
+   в выезжающем меню не повторяются — там остаётся всё прочее. ── */
+.tabnav,.tnm{display:none}
+@media(max-width:900px){
+  .tabnav{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);position:fixed;left:0;right:0;
+    bottom:0;z-index:40;background:var(--nv);border-top:1px solid var(--nvln);
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .tabnav:empty{display:none}
+  /* Место под меню держится, пока меню есть; прокрутка к полю останавливается над ним */
+  html:has(.tabnav:not(:empty)){scroll-padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  html:has(.tabnav:not(:empty)) .main{padding-bottom:86px}
+  .side .nav.inbar{display:none}
+  .tn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:50px;
+    min-width:0;border:none;background:none;color:var(--nvmut);font-family:inherit;font-size:var(--f11);
+    font-weight:500;border-radius:var(--rb);cursor:pointer;padding:0 2px}
+  .tn .t{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* Ряд тёмный, как боковое меню: подпись открытого раздела светлая, красный — только значок */
+  .tn.act{color:var(--nvink);font-weight:600}
+  .tn.act svg{color:var(--red)}
+  .tn.plus .pc{width:48px;height:48px;border-radius:var(--rp);background:var(--red);color:#fff;display:flex;
+    align-items:center;justify-content:center;box-shadow:var(--sh2);margin-top:-20px}
+  .tn.plus:active .pc,.tn.plus.on .pc{background:var(--redd)}
+  .tnm{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);
+    z-index:41;min-width:230px;background:var(--card);border-radius:var(--rc);box-shadow:var(--sh3);padding:6px 0}
+  .tnm.on{display:block}
+  .tnm .nav{margin:1px 6px}
+  /* Меню «+» — список действий, а не разделов: отметку текущего раздела оно не несёт */
+  .tnm .nav.act{background:none;color:inherit;font-weight:inherit}
+  /* Всплывающее сообщение и подвал выезда — над рядом, а не под ним */
+  html:has(.tabnav:not(:empty)) .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+  html:has(.tabnav:not(:empty)) #toView .tofoot{bottom:calc(63px + env(safe-area-inset-bottom))}
+}
+
+/* ══ ПРАВКИ ПОСЛЕ ОСМОТРА В БРАУЗЕРЕ ═══════════════════════════════════ */
+
+/* Поле «Поиск» в разделах ТО и Смены прижимало текст вправо: класс .f
+   пришёл из редактора сметы, где в полях суммы. Право — только там. */
+input.f{text-align:left}
+#editorView .row input.f,.fmini,#mpBox .mpr input.p{text-align:right}
+
+/* Активная вкладка раздела. Была залита красным — рядом с красной кнопкой
+   действия глаз не отличал «где я» от «что нажать» (И3). Теперь подложка
+   и красная засечка снизу: место видно, а красная кнопка на экране одна. */
+.stab.on{background:var(--soft);border-color:var(--line2);color:var(--ink);font-weight:600;
+  box-shadow:inset 0 -2px 0 var(--red)}
+.stab.on:hover{background:var(--hover);border-color:var(--mut)}
+.stab.mon.on{box-shadow:inset 0 -2px 0 var(--amb)}
+
+/* Метрики отдела ТО (#512): нажимаемая плитка, строка под цель, прочерк, два списка. */
+.k.go{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.k.go:hover{border-color:var(--mut)}
+.k .gl{min-height:var(--f12);margin-top:2px;font-size:var(--f12);color:var(--mut)}
+.k .vl.na{color:var(--mut)}
+/* Обзор по отделам (#659). Монтаж и Обслуживание — на всю ширину, Продажи
+   и Снабжение — рядом. На телефоне видны главная цифра и проблемные, прочее
+   под «Ещё N»; проблемное число окрашено цветом своего значка. */
+.ovg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-flow:row dense;gap:14px;align-items:start;margin-bottom:14px}
+.ovb.w{grid-column:1/-1}
+.ovb .kp{padding:0 15px 15px;margin:0}
+.ovb .ovm{margin-left:auto;display:none}
+.ovb .k.bad .vl{color:var(--red)}
+.ovb .k.warn .vl{color:var(--amb)}
+.ovp{margin-bottom:14px}
+.ovp p{margin:0}
+@media(max-width:900px){
+  .ovg{grid-template-columns:minmax(0,1fr)}
+  .ovb .ovm{display:inline-flex}
+  .ovb:not(.open) .k.opt{display:none}
+}
+.mtl{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.mcol{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 12px;display:flex;flex-direction:column;gap:4px}
+.mrow{display:flex;justify-content:space-between;gap:10px;align-items:baseline;width:100%;text-align:left;
+  font:inherit;color:inherit;background:none;border:none;padding:6px 0;cursor:pointer;border-top:1px solid var(--line)}
+.mrow:hover .nm{text-decoration:underline}
+.mrow .mv{font-size:var(--f12);color:var(--mut);white-space:nowrap}
+.mrow .mv.bad{color:var(--red)}
+.mrow .nm{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.mrow svg.i{flex:none;width:14px;height:14px;color:var(--mut);align-self:center}
+.mtnav .tbtn{min-width:40px;height:40px}
+
+/* Текстовое значение в карточке показателя — «Август 2026» не число,
+   многоточие ему не идёт. */
+.k .vl .txt{font-size:var(--f15);font-weight:700;letter-spacing:-.2px;white-space:normal}
+.k .vl{font-size:clamp(17px,3.1vw,var(--f28))}
+
+/* ══ ПОИСК В ШАПКЕ НА ТЕЛЕФОНЕ ═════════════════════════════════════════
+   Открывается строкой ПОД шапкой, а не поверх неё. Раньше поле растягивалось
+   на всю ширину и накрывало бургер: меню становилось недоступным, а закрыть
+   сам поиск было нечем. */
+@media(max-width:900px){
+  .sr.on{display:block;position:absolute;left:0;right:0;top:100%;max-width:none;
+    padding:8px 10px;background:var(--card);border-bottom:1px solid var(--line);
+    box-shadow:var(--sh1);z-index:5}
+  .sr.on .m{left:21px;top:18px}
+  /* Затемнение под выехавшим меню кликабельно на всю площадь */
+  .ov{-webkit-tap-highlight-color:transparent}
+}
+
+/* Итоги по КП. На широком экране панель прижата вправо — рядом с таблицей
+   сметы это верно. Как только таблица складывается, прижимать не к чему:
+   панель растягивается на всю ширину, иначе слева остаётся пустое поле
+   в половину экрана. */
+@media(max-width:1180px){
+  #calcpanel{max-width:none;margin-left:0}
+}
+
+/* ══ ИНТЕРАКТИВНЫЙ ПЛАН МОНТАЖА (блок 11) ══════════════════════════════
+   Подложка — PNG листа рабочки, приборы — маркеры в % кадра. Пан и зум
+   через transform на .plcanvas; touch-action:none отдаёт жесты нам,
+   иначе телефон прокручивает страницу вместо плана. */
+.plview{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:11px;
+  background:var(--soft);height:min(62vh,560px);touch-action:none;cursor:grab;
+  -webkit-user-select:none;user-select:none}
+.plview:active{cursor:grabbing}
+.plcanvas{position:relative;width:100%;transform-origin:0 0;will-change:transform;--iz:1}
+.plcanvas img{width:100%;display:block;pointer-events:none;-webkit-user-drag:none}
+/* Маркер прибора. Не <button>: у кнопок свои обязательные атрибуты (И7б),
+   а маркер — точка данных на чертеже; подсказка лежит в title. */
+.pmark{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
+  border:2px solid var(--card);box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;
+  background:var(--mut);z-index:2;
+  /* Обратный масштаб холста: маркер остаётся 16 px при любом зуме (#140) */
+  transform:scale(var(--iz));transform-origin:50% 50%}
+.pmark:hover{transform:scale(calc(var(--iz) * 1.35))}
+.pmark.t-smoke{background:var(--red)}
+.pmark.t-heat{background:var(--amb)}
+.pmark.t-ipr{background:var(--blu)}
+.pmark.t-siren{background:var(--ink)}
+.pmark.t-exit{background:var(--mut)}
+.pmark.t-udp{background:var(--blu)}
+.pmark.done{background:var(--grn)}
+/* Галочка на смонтированном — рисуется рамками, не символом (И6) */
+.pmark.done::after{content:"";position:absolute;left:3px;top:2px;width:6px;height:3.5px;
+  border-left:2px solid var(--card);border-bottom:2px solid var(--card);
+  transform:rotate(-45deg)}
+.pmark.hid{display:none}
+/* Кнопки зума поверх плана */
+.plz{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px;z-index:3}
+.plz .btn{background:var(--card)}
+/* Нажатая кнопка-фильтр, активный лист и открытый подбор */
+.btn.on{background:var(--sel);border-color:var(--sel);color:var(--selink);font-weight:600}
+.btn.primary.on{background:var(--redd);border-color:var(--redd);color:#fff}
+@media(max-width:900px){
+  .plview{height:min(58vh,480px)}
+  .pmark{width:20px;height:20px;margin:-10px 0 0 -10px}
+  .pmark.done::after{left:4px;top:3px;width:8px;height:4.5px}
+}
+/* Режимы офиса: точки и участки ставятся тапом по плану */
+.plview.addmode{cursor:crosshair;outline:2px solid var(--grn);outline-offset:-2px}
+/* Трассы технологической части поверх подложки. Сам svg клики не ловит —
+   ловят полилинии-невидимки с data-act внутри него. */
+.plsegs{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.plsegs polyline[data-act]{pointer-events:stroke}
+/* Участок строкой — на телефоне попасть в линию сложнее, чем в строку */
+.segrow{display:flex;gap:8px;align-items:center;padding:7px 0;font-size:var(--f13);
+  border-bottom:1px solid var(--soft);cursor:pointer}
+.segrow:hover{background:var(--hover)}
+.segdot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+/* Выдача каталога в окне «Сверх сметы» */
+.catbox{border:1px solid var(--line2);border-radius:8px;margin-top:6px;max-height:180px;
+  overflow:auto;background:var(--card)}
+.catbox:empty{display:none}
+.catit{padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:var(--f13)}
+.catit:last-child{border-bottom:none}
+.catit:hover{background:var(--hover)}
+
+/* ══ КОНЪЮНКТУРНЫЙ АНАЛИЗ ══════════════════════════════════════════════
+   Третья вкладка сметы (#403). Позиция остаётся строкой списка на тех же
+   двенадцати слотах сетки .thead/.row — пять её колонок отвечают на один
+   вопрос: хватает ли цен и какая принята. Предложения живут в готовом
+   контейнере .offers под строкой, и только внутри него заведена своя
+   сетка: одиннадцать величин схемы Минстроя в пять колонок не встают. */
+.kaon #calcpanel{display:none}
+/* Шапка документа — над липкой группой: её заполняют один раз, а таблицу
+   читают весь день. */
+.kahead{padding:12px 16px;margin-bottom:12px}
+.kahead .calchead{border:none;padding:0 0 6px}
+.kaline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.kaline .sub{flex:1 1 240px;min-width:0}
+/* Действия самой вкладки — в её полосе: они относятся к анализу, а не к смете.
+   Полоса заведена в #402, здесь к ней добавлена правая группа. */
+.tabbar{flex-wrap:wrap}
+.tabbar .acts{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap}
+/* Сравнимые числа — столбцами, несравнимое (наименование у поставщика,
+   обоснование) — подписью. */
+.offers.ka{padding:0;position:relative}
+.kah,.off.ka{display:grid;
+  grid-template-columns:26px minmax(0,1fr) 84px 84px 76px 76px 94px 122px 26px;gap:6px}
+.kah{padding:7px 12px 6px;font-size:var(--f11);text-transform:uppercase;letter-spacing:.4px;
+  color:var(--mut);font-weight:600;border-bottom:1px solid var(--line2);position:relative}
+.kah>*:nth-child(n+3):nth-child(-n+7){text-align:right}
+.off.ka{padding:8px 12px;border-bottom:1px solid var(--line);font-size:var(--f13);
+  align-items:start;position:relative}
+.off.ka.last{border-bottom:none}
+/* Нитка слева: одна волосяная линия связывает строки предложений с той
+   позицией, к которой они относятся, и обрывается на последней отметке.
+   У принятого отвод зелёный — единственный цвет в блоке. */
+.kah::before,.off.ka::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;
+  background:var(--line2)}
+.off.ka.last::before{bottom:auto;height:18px}
+.off.ka::after{content:'';position:absolute;left:6px;top:18px;width:6px;height:1px;
+  background:var(--line2)}
+.off.ka.acc::after{background:var(--grn);height:2px;top:17px}
+.off.ka>.v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-top:1px}
+.off.ka>.v.est2{font-weight:700}
+.off.ka>.v.doc{text-align:left;white-space:normal;font-variant-numeric:normal}
+.off.ka .sup2{font-size:var(--f12);color:var(--mut);line-height:1.4;margin-top:2px;
+  overflow-wrap:anywhere}
+.off.ka .smt{font-size:var(--f11);color:var(--dim);display:flex;flex-wrap:wrap;gap:1px 8px;
+  margin-top:2px}
+/* Принятое предложение — зелёная засечка слева и отметка выбора. Ни заливки,
+   ни цветного текста, ни зелёной метки «принято»: принятое есть у каждой
+   позиции, и три способа сказать одно и то же делают пестроту. */
+.off.ka.acc{box-shadow:inset 3px 0 0 var(--grn)}
+.off.ka .sup .pill{display:inline-block;margin-left:6px;vertical-align:1px}
+.off.ka input[type=radio]{width:16px;height:16px;accent-color:var(--grn);cursor:pointer;
+  margin-top:2px}
+/* Пропуск реквизитов — один знак 13 px у имени компании, а не три янтарных
+   слова в каждой строке. Нажатие открывает список компаний — там и вводят. */
+.reqw{background:none;border:0;padding:0;margin-left:6px;color:var(--amb);cursor:pointer;
+  line-height:0;vertical-align:-2px}
+.reqw svg{width:13px;height:13px;min-width:13px;min-height:13px}
+.reqw:hover{color:var(--red)}
+/* Счётчик предложений приглушён вместе со всей второй строкой (#402).
+   Красным он становится только тогда, когда предложений нет вовсе. */
+.namecell .offerline.none{color:var(--red)}
+/* Строки окна реквизитов и строки выбора в окне выгрузки. */
+.supgrid{display:grid;grid-template-columns:minmax(0,1fr) 150px 116px 146px 26px;gap:8px;
+  align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.supgrid:last-of-type{border-bottom:none}
+.supgrid select,.supgrid .fin{min-width:0;width:100%}
+/* Строки окна цен одного поставщика: позиция и одно поле. Список идёт на
+   всю смету, поэтому строка низкая, а имя переносится. */
+.pgrid{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:8px;align-items:center;
+  padding:7px 0;border-bottom:1px solid var(--line)}
+.pgrid:last-of-type{border-bottom:none}
+.pgrid .fin{min-width:0;width:100%;height:34px}
+.pgrid .sub{margin-top:1px}
+.optrow{display:flex;gap:10px;align-items:flex-start;padding:10px 0;
+  border-bottom:1px solid var(--line);cursor:pointer}
+.optrow:last-child{border-bottom:none}
+.optrow input[type=checkbox]{width:15px;height:15px;accent-color:var(--red);margin-top:3px;
+  flex:0 0 auto}
+/* Строка выбора с ценой справа: системы КП на ТО. */
+.optrow.price{align-items:center;padding:6px 0}
+.optrow.price input[type=checkbox]{margin-top:0}
+.optrow.price span{flex:1 1 auto;min-width:0}
+.optrow.price .fin{flex:0 0 120px;width:120px;height:32px}
+.optrow.price .fin.stage{flex:0 0 76px;width:76px;min-width:0;padding:0 6px}
+.selbar .fmini{height:28px;flex:0 0 auto;width:56px}
+.selbar .btn{flex:0 0 auto}
+.selbar select{height:30px;flex:0 1 auto}
+/* Причина, по которой действие погашено, — своей строкой под кнопками. */
+.selbar .fnote{flex:1 1 100%;margin-top:0}
+/* Хвост списка предложений: всё, что дороже принятого и минимального. */
+.katail{padding:8px 12px;font-size:var(--f12);color:var(--red);cursor:pointer;
+  border-top:1px solid var(--line)}
+.kafoot{padding:8px 12px;border-top:1px solid var(--line);display:flex;gap:7px;flex-wrap:wrap;
+  align-items:center}
+.kafoot .hint{flex:1 1 auto;min-width:0}
+/* Пропуск в величине: она обязательна в выгрузке, но её нет в базе.
+   Не пилюля и не заливка — величина стоит на своём месте и названа. */
+.gap{color:var(--amb);font-weight:600}
+@media(max-width:1180px){
+  .supgrid{grid-template-columns:minmax(0,1fr) 26px;gap:6px 8px}
+  .supgrid select,.supgrid .fin{grid-column:1/-1}
+  .pgrid{grid-template-columns:minmax(0,1fr) 116px}
+  /* Свёрнутая позиция не показывает предложения: раскрытие одно на строку. */
+  .rowwrap:not(.op)>.offers{display:none}
+  .kah{display:none}
+  .off.ka{display:flex;flex-wrap:wrap;gap:0 8px;padding:9px 11px 9px 16px;align-items:center}
+  .off.ka>*:nth-child(1){order:1;flex:0 0 auto}
+  /* Поставщик занимает строку за вычетом отметки выбора и меню: с auto меню
+     уезжало под него, с нулевой основой сплющивался он сам. */
+  .off.ka>.sup{order:2;flex:1 1 calc(100% - 64px);min-width:0}
+  .off.ka>.mn{order:3;flex:0 0 auto;margin-left:auto}
+  .off.ka>.v{order:4;flex:1 1 calc(50% - 4px);min-width:0;text-align:left;
+    border-top:1px solid var(--line);padding:6px 0 2px;white-space:normal}
+  .off.ka>.v::before{content:attr(data-l);display:block;font-size:var(--f11);color:var(--mut);
+    margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .off.ka>.v.est2{flex:1 1 100%;font-size:var(--f14)}
+  .off.ka>.v.doc{flex:1 1 100%}
+  .tabbar .acts{flex:1 1 100%;margin-left:0}
+}
+
+/* ── 17. Сварка труб ──────────────────────────────────────────────────
+   Окно шире обычного: у участка до семи величин, и в 720 px они
+   складывались в два ряда уже на ноутбуке. */
+.mwin.wide{max-width:1000px}
+.weldhead{margin-bottom:9px}
+/* Три строки шапки: обоснование цены, способ расчёта, тариф. Обоснование
+   первым — оно решает, что уйдёт в КП; способ второй, а тариф следует за
+   ними, потому что принадлежит выбранной паре, а не окну. */
+.weldrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.weldlbl{font-size:var(--f12);color:var(--mut);min-width:62px}
+.weldtabs{margin-bottom:9px}
+/* Название позиции — единственное текстовое поле таблицы, и оно длинное:
+   остальным колонкам хватает своей ширины, а ему отдаётся остаток. */
+.weldspec td:first-child{min-width:240px}
+.weldspec .nm{font-size:var(--f13);line-height:1.35}
+.weldspec td.n{width:104px}
+.weldpars{gap:14px}
+/* Подпись, поле и единица стоят в строку: цена шва — одно число, а не
+   форма, и столбиком она забирала бы высоту у списка участков. */
+.weldpar{display:flex;gap:6px;align-items:center;font-size:var(--f12);color:var(--mut);
+  white-space:nowrap}
+.weldpar .fmini{width:72px;height:28px;font-size:var(--f13)}
+.weldnote{margin:0 0 11px}
+.weldtbl .fmini{width:100%;height:30px}
+.weldtbl input.f{height:30px;text-align:left}
+.weldtbl td.n{width:92px}
+.weldtbl td:first-child,.weldtbl th:first-child{min-width:148px}
+.weldtbl .wsum{font-weight:700}
+.weldfoot{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin:11px 0 4px}
+/* Итог держится у кромки окна и говорит три вещи: сумму, чем посчитано
+   и что именно ляжет в смету. Метка методики приглушённая: она сообщает,
+   а не выносит вердикт. */
+.weldtotal{margin-left:auto;text-align:right;min-width:0}
+.wtline{display:flex;gap:8px;align-items:center;justify-content:flex-end}
+.weldtotal .wtotal{font-size:var(--f14);color:var(--mut)}
+.weldtotal .wtotal b{font-size:var(--f15);color:var(--ink);margin:0 4px}
+.weldtotal .sub{margin-top:2px}
+/* Участок — форма ввода, а не запись для чтения, поэтому готовое
+   сворачивание `.xscroll` до первой ячейки здесь отменяется: прятать поля,
+   которые надо заполнить, незачем. До 760 px таблица остаётся таблицей и
+   при нехватке ширины прокручивается вбок. */
+@media(max-width:900px){
+  .xscroll table.weldtbl{display:table;min-width:640px}
+  .xscroll .weldtbl tbody{display:table-row-group}
+  .xscroll .weldtbl tr{display:table-row;background:none;border:none;border-radius:0;margin:0}
+  .xscroll .weldtbl th{display:table-cell}
+  .xscroll .weldtbl tbody td,
+  .xscroll .weldtbl tbody tr td:not(:first-child){display:table-cell;text-align:left;
+    border-bottom:1px solid var(--line);padding:7px 12px}
+  .xscroll .weldtbl tbody td::before{display:none}
+  .xscroll .weldtbl tbody td:first-child::after{display:none}
+  .xscroll .weldtbl tbody td:first-child{cursor:default}
+}
+/* Ниже 760 px участок становится карточкой: подписи уходят к ячейкам,
+   поля встают в два столбца. Семь величин столбиком на всю ширину
+   заставляли прокручивать один участок. */
+@media(max-width:760px){
+  .xscroll table.weldtbl{display:block;min-width:0}
+  .xscroll .weldtbl tbody{display:block}
+  .xscroll .weldtbl tbody tr[data-wrow],.xscroll .weldtbl tbody tr[data-wsrow]{position:relative;display:flex;flex-wrap:wrap;gap:0 8px;
+    border:1px solid var(--line2);border-radius:9px;margin:0 0 8px;padding:9px 11px}
+  .xscroll .weldtbl tbody td,
+  .xscroll .weldtbl tbody tr td:not(:first-child){display:block;border:none;padding:4px 0;
+    flex:1 1 calc(50% - 4px);min-width:0;background:none;text-align:left}
+  .xscroll .weldtbl tbody td:first-child{flex:1 1 100%;padding:4px 0}
+  .xscroll .weldtbl tbody td::before{content:attr(data-l);display:block;
+    font-size:var(--f11);color:var(--mut);margin-bottom:3px;text-align:left}
+  .xscroll .weldtbl tbody td.n{width:auto}
+  .xscroll .weldtbl tbody td>*{justify-self:start}
+  /* Название позиции и его пометка занимают строку целиком: в половине
+     ширины «Отвод 90° б/ш 57х3,5 ГОСТ 17375-2001» ломается посреди размера. */
+  .xscroll .weldspec tbody td:first-child{min-width:0}
+  .weldtbl thead,.weldtbl tr:first-child{display:none}
+  .xscroll .weldtbl tbody td.inc{position:absolute;right:9px;top:9px;flex:0 0 auto;
+    padding:0;width:auto}
+  .xscroll .weldtbl tbody td.inc::before{display:none}
+  .weldpars{margin-left:0}
+}
+
+/* ── Финансы (#660, kp-22.js): операции выписки, заказы, ДДС ── */
+#financeView .f6stick{position:sticky;top:56px;z-index:2;background:var(--page);padding-top:2px}
+.f6bar .curnote+.acts{margin-left:0}
+.f6bar .acts{align-items:center}
+.f6bar .stab{position:relative}
+.f6bar .stab .ch{padding:1px 6px}
+.f6flt{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
+.f6flt .f6tot{margin-left:auto}
+.f6res{display:flex;gap:6px;align-items:center;margin:0 0 10px;color:var(--grn);font-weight:600;font-size:var(--f12)}
+.f6res svg.i{width:14px;height:14px;min-width:14px;min-height:14px}
+.f6t td{vertical-align:middle}
+@media(min-width:901px){
+  .f6t{table-layout:fixed}
+  .f6t th,.f6t td{padding-left:8px;padding-right:8px}
+  .f6t th:nth-child(1){width:24%}.f6t th:nth-child(2){width:62px}.f6t th:nth-child(4){width:128px}
+  .f6t th:nth-child(5){width:24%}.f6t th:nth-child(6){width:14%}.f6t th:nth-child(7){width:172px}
+  .f6t.o th:nth-child(n){width:auto}
+  .f6t.o{table-layout:auto}
+  .f6nm b{max-width:none}
+  .f6t .f6p,.f6t .f6sel,.f6t .f6sel.ord{max-width:none;width:100%;min-width:0}
+  .f6a .f6sel{flex:1 1 auto}
+  .f6t td,.f6t th{overflow:hidden}
+}
+@media(min-width:901px) and (max-width:1280px){
+  .f6t th:nth-child(2),.f6t td:nth-child(2){display:none}
+  .f6t:not(.o) td:first-child .sub{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .f6a .pill{display:none}
+  .f6t th:nth-child(1){width:26%}.f6t th:nth-child(4){width:116px}.f6t th:nth-child(5){width:26%}
+}
+.f6t th:first-child,.f6t td:first-child{padding-left:15px}
+.f6t .f6r{text-align:right}
+.f6c{display:flex;align-items:center;gap:9px;min-width:0}
+.f6nm{min-width:0;flex:1}
+.f6nm b{font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+.f6c>.f6s{display:none}
+.f6s{font-weight:600;color:var(--ink)}
+.f6s.in{color:var(--grn)}
+.f6none{color:var(--amb);font-weight:600}
+.f6p{display:block;max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink2);cursor:pointer}
+.f6p.full{white-space:normal}
+.f6a{display:flex;align-items:center;gap:6px}
+.f6a .pill{margin-left:0}
+.f6sel{height:32px;width:250px;max-width:100%;padding:0 8px;font-size:var(--f12)}
+.f6sel.ord{width:180px}
+.f6sel.none{color:var(--amb);font-weight:600}
+.f6sel.dt{width:136px}
+.f6sel.dt.blank{color:var(--dim)}
+.f6a .btn.sm.io{width:32px;height:32px;flex:0 0 auto}
+.f6kp{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.f6kp .k{padding:13px 15px 11px}
+.f6kp .k.f6x{border-color:var(--amb)}
+.f6kp .dl{display:flex;gap:5px;align-items:center}
+.f6kp .dl svg.i{width:13px;height:13px;min-width:13px;min-height:13px}
+.f6kp .dl.ok{color:var(--grn);font-weight:600}
+.f6kp .dl.x{color:var(--amb);font-weight:600}
+.f6g .acch .rt{font-size:var(--f13);color:var(--ink);font-weight:600}
+.f6g .rt.in{color:var(--grn)}
+.f6g .acch.flat{cursor:default}
+.f6g .acch.flat:hover{background:none}
+.f6g .acch .gap15{width:15px;flex:0 0 auto}
+.f6g .acch.none .nm b,.f6g .acch.none .rt{color:var(--amb)}
+.f6g .acch.none{cursor:pointer}
+.f6g .accb{padding:4px 15px}
+.f6ar{display:flex;gap:12px;align-items:baseline;padding:8px 27px 8px 0;font-size:var(--f13);border-bottom:1px solid var(--line)}
+.f6ar:last-child{border-bottom:none}
+.f6ar .t{flex:1;min-width:0;color:var(--ink2);text-wrap:pretty}
+.f6g .ftot{display:flex;gap:12px;padding:12px 42px 12px 15px;border-top:1px solid var(--line2);font-weight:700;font-size:var(--f13)}
+.f6g .ftot span:first-child{flex:1}
+.f6mon{font-weight:600;font-size:var(--f13);min-width:78px;text-align:center}
+.f6pl tr.g td.nm{cursor:pointer}
+.f6pl td.nm .chv{width:12px;height:12px;margin:0 5px 0 -3px;vertical-align:-1px;color:var(--mut);transition:transform .15s}
+.f6pl tr.g.op td.nm .chv{transform:rotate(90deg)}
+.f6pl td.d1{padding-left:27px}
+.f6pl td.d2{padding-left:45px;color:var(--mut)}
+.f6pl tr.tot td{font-weight:700;background:var(--soft)}
+.f6pl .neg{color:var(--red)}
+.f6form{padding:15px;margin-bottom:12px}
+.f6form .bar{justify-content:flex-end}
+.f6form .f6ar{align-items:center;padding-right:0}
+@media(max-width:900px){
+  .f6card{background:none;box-shadow:none;border:0!important}
+  .f6c>.f6s{display:inline;margin-left:auto;padding-left:8px}
+  .f6nm b{max-width:none}
+  .xscroll tbody tr.op td.f6w{display:block;text-align:left}
+  .xscroll tbody td.f6w::before{display:block;margin-bottom:6px}
+  .f6t td>.f6c,.f6t td.f6w>*{justify-self:stretch}
+  .xscroll tbody tr.op td.f6d{display:none}
+  .f6p{max-width:none;white-space:normal;cursor:default}
+  .f6sel,.f6sel.ord{width:100%;height:40px;font-size:var(--f13)}
+  .f6a{width:100%}
+  .f6a .btn.sm.io{width:40px;height:40px}
+  .f6bar .stab:not(.on) .ch{position:absolute;top:-6px;right:-6px}
+}
+@media(max-width:560px){
+  .f6bar .acts .btn.primary{width:40px;padding:0;justify-content:center}
+  .f6bar .acts .btn.primary .lbl{display:none}
+  .f6kp{grid-template-columns:minmax(0,1fr)}
+  .f6kp .k .vl{font-size:var(--f28)}
+}
+#trackView .trkmode{padding:0 0 10px;gap:6px}
+#trackView .trkb{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;align-items:flex-start;
+  scroll-snap-type:x proximity}
+#trackView .trkc{flex:0 0 260px;background:var(--soft);border:1px solid var(--line);border-radius:var(--rc);
+  padding:8px;min-height:120px;scroll-snap-align:start}
+#trackView .trkc.drop{border-color:var(--blu);background:var(--blubg)}
+#trackView .trkch{display:flex;flex-direction:column;gap:2px;padding:4px 6px 8px}
+#trackView .trkch b{font-size:var(--f13);font-weight:600}
+#trackView .trkch .s{font-size:var(--f11);color:var(--mut)}
+#trackView .trkk{background:var(--card);border:1px solid var(--line);border-radius:var(--rb);padding:10px 12px;
+  margin-bottom:6px;cursor:grab;display:flex;flex-direction:column;gap:3px}
+#trackView .trkk:hover{border-color:var(--line2);box-shadow:var(--sh1)}
+#trackView .trkk b{font-size:var(--f13);font-weight:600}
+#trackView .trkk .s,#trackView .trkk .sub{font-size:var(--f12);color:var(--mut)}
+#trackView .trkk .n{font-size:var(--f13);font-weight:600}
+@media (max-width:760px){#trackView .trkc{flex-basis:78vw}}
+#trackView .trkc.empty{flex-basis:150px}
+@media (max-width:760px){#trackView .trkc.empty{flex-basis:40vw}}
